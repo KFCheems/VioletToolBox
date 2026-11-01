@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.ModulePage"
+             x:DataType="vm:ModulePageViewModel">
+  <StackPanel>
+    <TextBlock Text="模块专区" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="820" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <TextBlock Text="快捷安装（管理器 APK）" FontWeight="Medium" />
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+          <TextBlock Grid.Column="0" Text="管理器" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding Managers}" SelectedItem="{Binding SelectedManager}" MinWidth="170" HorizontalAlignment="Left" />
+          <Button Grid.Column="2" Classes="violet" Content="获取并安装最新版" Command="{Binding InstallManagerCommand}" />
+        </Grid>
+      </StackPanel>
+    </Border>
+
+    <Border Classes="card" MaxWidth="820" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <TextBlock Text="模块安装（zip，需 root）" FontWeight="Medium" />
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding ModuleZip}" PlaceholderText="模块 zip 路径" />
+          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickModuleCommand}" />
+          <Button Grid.Column="2" Classes="violet" Content="安装模块" Command="{Binding InstallModuleCommand}" />
+        </Grid>
+        <Button Content="隐藏 ROOT（denylist）" Command="{Binding HideRootCommand}" HorizontalAlignment="Left" />
+      </StackPanel>
+    </Border>
+
+    <Border Classes="card" MaxWidth="820" HorizontalAlignment="Left">
+      <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+    </Border>
+  </StackPanel>
+</UserControl>

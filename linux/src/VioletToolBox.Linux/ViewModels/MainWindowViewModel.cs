@@ -16,20 +16,40 @@ public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
     public MainWindowViewModel()
     {
         DevicePage = new DevicePageViewModel();
+        ScreenPage = new ScreenPageViewModel(AppendLog);
         FlashPage = new FlashPageViewModel(AppendLog, this);
         PartitionPage = new PartitionPageViewModel(AppendLog, this);
-        ExtractionPage = new ExtractionPageViewModel(AppendLog, this);
+        OujiaPage = new OujiaPageViewModel(AppendLog, this);
         EdlPage = new EdlPageViewModel(AppendLog, this);
+        DowngradePage = new DowngradePageViewModel(AppendLog, this);
+        ModulePage = new ModulePageViewModel(AppendLog, this);
+        AppsPage = new AppsPageViewModel(AppendLog, this);
+        BootPatchPage = new BootPatchPageViewModel(AppendLog, this);
+        GenericPage = new GenericPageViewModel(AppendLog, this);
+        ExtractionPage = new ExtractionPageViewModel(AppendLog, this);
+        BackupPage = new BackupPageViewModel(AppendLog, this);
+        DownloadCenterPage = new DownloadCenterPageViewModel(AppendLog);
         DownloadPage = new DownloadPageViewModel(AppendLog, this);
+        AboutPage = new AboutPageViewModel();
 
         NavItems =
         [
             new NavItem("设备", "⌂", DevicePage),
+            new NavItem("投屏", "▶", ScreenPage),
             new NavItem("刷入", "⚡", FlashPage),
             new NavItem("分区", "▤", PartitionPage),
-            new NavItem("解包", "▣", ExtractionPage),
+            new NavItem("欧加线刷", "◈", OujiaPage),
             new NavItem("EDL", "◉", EdlPage),
+            new NavItem("降级助手", "⇩", DowngradePage),
+            new NavItem("模块专区", "⊕", ModulePage),
+            new NavItem("应用与文件", "☰", AppsPage),
+            new NavItem("脱机修补", "⚒", BootPatchPage),
+            new NavItem("安卓通用", "⚙", GenericPage),
+            new NavItem("解包", "▣", ExtractionPage),
+            new NavItem("备份助手", "🕮", BackupPage),
+            new NavItem("下载专区", "⇓", DownloadCenterPage),
             new NavItem("下载", "↓", DownloadPage),
+            new NavItem("关于", "ℹ", AboutPage),
         ];
 
         var requested = Program.InitialPage;
@@ -41,11 +61,21 @@ public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
     }
 
     public DevicePageViewModel DevicePage { get; }
+    public ScreenPageViewModel ScreenPage { get; }
     public FlashPageViewModel FlashPage { get; }
     public PartitionPageViewModel PartitionPage { get; }
-    public ExtractionPageViewModel ExtractionPage { get; }
+    public OujiaPageViewModel OujiaPage { get; }
     public EdlPageViewModel EdlPage { get; }
+    public DowngradePageViewModel DowngradePage { get; }
+    public ModulePageViewModel ModulePage { get; }
+    public AppsPageViewModel AppsPage { get; }
+    public BootPatchPageViewModel BootPatchPage { get; }
+    public GenericPageViewModel GenericPage { get; }
+    public ExtractionPageViewModel ExtractionPage { get; }
+    public BackupPageViewModel BackupPage { get; }
+    public DownloadCenterPageViewModel DownloadCenterPage { get; }
     public DownloadPageViewModel DownloadPage { get; }
+    public AboutPageViewModel AboutPage { get; }
 
     public ObservableCollection<NavItem> NavItems { get; }
 

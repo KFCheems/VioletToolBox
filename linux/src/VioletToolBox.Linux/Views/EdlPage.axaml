@@ -25,6 +25,10 @@
           <Button Content="重启系统" Command="{Binding ResetCommand}" CommandParameter="reset" />
           <Button Content="重启 EDL" Command="{Binding ResetCommand}" CommandParameter="edl" />
           <Button Content="重启 Fastboot" Command="{Binding ResetCommand}" CommandParameter="fastboot" />
+          <Button Content="备份指纹/GPT" Command="{Binding BackupFingerprintCommand}" />
+          <Button Content="恢复出厂" Command="{Binding FactoryResetCommand}" />
+          <Button Content="清除 FRP" Command="{Binding WipeFrpCommand}" />
+          <Button Content="格式化当前 LUN" Command="{Binding FormatLunCommand}" />
         </StackPanel>
         <TextBox Text="{Binding DeviceInfo}" IsReadOnly="True" AcceptsReturn="True" Background="Transparent"
                  BorderThickness="0" MinHeight="70" TextWrapping="Wrap" FontSize="12.5" Foreground="#D6D0E4" />

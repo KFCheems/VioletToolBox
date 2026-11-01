@@ -5,7 +5,7 @@
         x:Class="VioletToolBox.Linux.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="紫罗兰工具箱 · Linux"
-        Width="1180" Height="780"
+        Width="1280" Height="820"
         MinWidth="960" MinHeight="640"
         Background="#12101A"
         Icon="avares://VioletToolBox/Assets/logo2.ico">
@@ -16,10 +16,20 @@
     <DataTemplate DataType="vm:PartitionPageViewModel"><v:PartitionPage /></DataTemplate>
     <DataTemplate DataType="vm:ExtractionPageViewModel"><v:ExtractionPage /></DataTemplate>
     <DataTemplate DataType="vm:EdlPageViewModel"><v:EdlPage /></DataTemplate>
+    <DataTemplate DataType="vm:ScreenPageViewModel"><v:ScreenPage /></DataTemplate>
+    <DataTemplate DataType="vm:OujiaPageViewModel"><v:OujiaPage /></DataTemplate>
+    <DataTemplate DataType="vm:ModulePageViewModel"><v:ModulePage /></DataTemplate>
+    <DataTemplate DataType="vm:AppsPageViewModel"><v:AppsPage /></DataTemplate>
+    <DataTemplate DataType="vm:BootPatchPageViewModel"><v:BootPatchPage /></DataTemplate>
+    <DataTemplate DataType="vm:GenericPageViewModel"><v:GenericPage /></DataTemplate>
+    <DataTemplate DataType="vm:BackupPageViewModel"><v:BackupPage /></DataTemplate>
+    <DataTemplate DataType="vm:DownloadCenterPageViewModel"><v:DownloadCenterPage /></DataTemplate>
+    <DataTemplate DataType="vm:DowngradePageViewModel"><v:DowngradePage /></DataTemplate>
+    <DataTemplate DataType="vm:AboutPageViewModel"><v:AboutPage /></DataTemplate>
     <DataTemplate DataType="vm:DownloadPageViewModel"><v:DownloadPage /></DataTemplate>
   </Window.DataTemplates>
 
-  <Grid ColumnDefinitions="200,*,0">
+  <Grid ColumnDefinitions="216,*,0">
 
     <!-- Sidebar -->
     <Border Grid.Column="0" Background="{DynamicResource SideBarBrush}">

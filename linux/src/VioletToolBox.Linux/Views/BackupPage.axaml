@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.BackupPage"
+             x:DataType="vm:BackupPageViewModel">
+  <StackPanel>
+    <TextBlock Text="备份助手" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="760" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="14">
+          <RadioButton GroupName="bmode" Content="照片 (DCIM)" IsChecked="{Binding IsPhotos}" />
+          <RadioButton GroupName="bmode" Content="视频" IsChecked="{Binding IsVideos}" />
+          <RadioButton GroupName="bmode" Content="通讯录 (VCF)" IsChecked="{Binding IsContacts}" />
+        </StackPanel>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding SaveDir}" PlaceholderText="备份保存目录" />
+          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickDirCommand}" />
+        </Grid>
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Classes="violet" Content="开始备份" Command="{Binding BackupCommand}" />
+          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

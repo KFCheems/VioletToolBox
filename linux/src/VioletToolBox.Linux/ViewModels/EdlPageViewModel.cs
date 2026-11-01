@@ -42,6 +42,10 @@ public sealed class EdlPageViewModel : ViewModelBase
         WriteCommand = new AsyncCommand(() => RunAsync(WriteAsync));
         EraseCommand = new AsyncCommand(() => RunAsync(EraseAsync));
         ResetCommand = new ParameterCommand(mode => RunFirehoseReset(mode));
+        BackupFingerprintCommand = new AsyncCommand(() => RunAsync(BackupFingerprintAsync));
+        FactoryResetCommand = new AsyncCommand(() => RunAsync(FactoryResetAsync));
+        WipeFrpCommand = new AsyncCommand(() => RunAsync(WipeFrpAsync));
+        FormatLunCommand = new AsyncCommand(() => RunAsync(FormatLunAsync));
     }
 
     public AsyncCommand RefreshPortsCommand { get; }
@@ -53,6 +57,10 @@ public sealed class EdlPageViewModel : ViewModelBase
     public AsyncCommand WriteCommand { get; }
     public AsyncCommand EraseCommand { get; }
     public ParameterCommand ResetCommand { get; }
+    public AsyncCommand BackupFingerprintCommand { get; }
+    public AsyncCommand FactoryResetCommand { get; }
+    public AsyncCommand WipeFrpCommand { get; }
+    public AsyncCommand FormatLunCommand { get; }
 
     public ObservableCollection<string> Ports { get; } = [];
     public ObservableCollection<EdlPartitionRowViewModel> Partitions { get; } = [];
@@ -171,6 +179,36 @@ public sealed class EdlPageViewModel : ViewModelBase
         var partition = SelectedPartition.Partition;
         await Task.Run(() => _session.ErasePartition(partition, m => _log($"[EDL] {m}"))).ConfigureAwait(true);
         Status = $"✓ {partition.Label} 已擦除。";
+    }
+
+    private async Task BackupFingerprintAsync()
+    {
+        if (_session is null) { Status = "请先连接设备。"; return; }
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "VioletToolBox", "edl_backup", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+        Status = "备份基带指纹与 GPT…";
+        var files = await Task.Run(() => _session.BackupFingerprintAndGpt(dir,
+            p => Percent = p, m => _log(m))).ConfigureAwait(true);
+        Status = $"✓ 已备份 {files.Count} 个文件到 {dir}";
+    }
+
+    private Task FactoryResetAsync()
+    {
+        if (_session is null) { Status = "请先连接设备。"; return Task.CompletedTask; }
+        return Task.Run(() => _session.FactoryReset(m => _log(m)));
+    }
+
+    private Task WipeFrpAsync()
+    {
+        if (_session is null) { Status = "请先连接设备。"; return Task.CompletedTask; }
+        return Task.Run(() => _session.WipeFrp(m => _log(m)));
+    }
+
+    private Task FormatLunAsync()
+    {
+        if (_session is null) { Status = "请先连接设备。"; return Task.CompletedTask; }
+        var lun = SelectedPartition?.Partition.Lun ?? 0;
+        return Task.Run(() => _session.FormatLun(lun, m => _log(m)));
     }
 
     private async void RunFirehoseReset(string? mode)

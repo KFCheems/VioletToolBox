@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.ScreenPage"
+             x:DataType="vm:ScreenPageViewModel">
+  <StackPanel>
+    <TextBlock Text="投屏（scrcpy）" Classes="h1" />
+    <Border Classes="card" MaxWidth="760" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <TextBlock Text="{Binding Availability}" Foreground="#B7AFCE" FontSize="12.5" />
+        <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*" ColumnSpacing="8">
+          <TextBlock Grid.Column="0" Text="清晰度上限" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding SizeOptions}" SelectedItem="{Binding MaxSize}" />
+          <TextBlock Grid.Column="2" Text="码率 (Mbps)" VerticalAlignment="Center" />
+          <NumericUpDown Grid.Column="3" Value="{Binding Bitrate}" Minimum="1" Maximum="50" Increment="1" />
+          <TextBlock Grid.Column="4" Text="帧率上限" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="5" ItemsSource="{Binding FpsOptions}" SelectedItem="{Binding MaxFps}" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="16">
+          <CheckBox Content="息屏投屏" IsChecked="{Binding TurnScreenOff}" />
+          <CheckBox Content="保持唤醒" IsChecked="{Binding StayAwake}" />
+          <CheckBox Content="显示触控" IsChecked="{Binding ShowTouches}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Classes="violet" Content="开始投屏" Command="{Binding StartCommand}" />
+          <Button Content="停止" Command="{Binding StopCommand}" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

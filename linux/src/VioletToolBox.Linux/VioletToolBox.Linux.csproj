@@ -29,4 +29,12 @@
     <AvaloniaResource Include="Assets\logo2.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Bundled host/device tools: kptools, kpimg, ksud, lpmake, magiskboot -->
+    <Content Include="Assets\tools\**\*">
+      <Link>tools\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

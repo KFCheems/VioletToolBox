@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.BootPatchPage"
+             x:DataType="vm:BootPatchPageViewModel">
+  <StackPanel>
+    <TextBlock Text="脱机修补（boot.img）" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="820" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding BootImg}" PlaceholderText="boot.img 路径（可来自 payload 解包）" />
+          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickBootCommand}" />
+          <Button Grid.Column="2" Content="解析镜像" Command="{Binding InspectCommand}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding OutputDir}" PlaceholderText="输出目录" />
+          <Button Grid.Column="1" Content="输出目录…" Command="{Binding PickOutputCommand}" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Classes="violet" Content="Magisk 风格重打包" Command="{Binding PatchMagiskCommand}" />
+        </StackPanel>
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+          <TextBlock Grid.Column="0" Text="SuperKey" VerticalAlignment="Center" />
+          <TextBox Grid.Column="1" Text="{Binding SuperKey}" PlaceholderText="APatch 超级密钥" />
+          <Button Grid.Column="2" Classes="violet" Content="APatch 内核修补" Command="{Binding PatchApatchCommand}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding LkmPath}" PlaceholderText="LKM .ko（设备端加载，需 root）" />
+          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickLkmCommand}" />
+          <Button Grid.Column="2" Content="加载 LKM" Command="{Binding InstallLkmCommand}" />
+        </Grid>
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+        <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

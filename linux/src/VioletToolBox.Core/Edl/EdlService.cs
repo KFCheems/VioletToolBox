@@ -145,6 +145,77 @@ public sealed class EdlSession : IDisposable
         log?.Invoke($"已发送重置命令：{mode}");
     }
 
+    // ---- EDL 刷写扩展操作（对应上游 MainWindow.EdlFlash.cs 的完整操作面）----
+
+    /// <summary>Backs up the baseband fingerprint (modemst1/2 + fsc) and the GPT of every LUN.</summary>
+    public IReadOnlyList<string> BackupFingerprintAndGpt(string outputDir, Action<double>? progress = null,
+        Action<string>? log = null)
+    {
+        Directory.CreateDirectory(outputDir);
+        var done = new List<string>();
+        var partitions = GetPartitions(log);
+        var targets = partitions
+            .Where(p => p.Label is "modemst1" or "modemst2" or "fsc" or "gpt" or "fsg")
+            .ToList();
+
+        foreach (var (i, p) in targets.Select((p, i) => (i, p)))
+        {
+            var path = Path.Combine(outputDir, $"{p.Label}_LUN{p.Lun}.bin");
+            progress?.Invoke(targets.Count == 0 ? 0 : i * 100.0 / targets.Count);
+            ReadPartition(p, path);
+            done.Add(path);
+            log?.Invoke($"[EDL] 已备份 {p.Label} → {Path.GetFileName(path)}");
+        }
+        progress?.Invoke(100);
+        return done;
+    }
+
+    /// <summary>Factory reset via EDL: zeroes userdata/metadata (persist kept by default).</summary>
+    public void FactoryReset(Action<string>? log = null)
+    {
+        var partitions = GetPartitions(log);
+        foreach (var label in new[] { "userdata", "metadata" })
+        {
+            var p = partitions.FirstOrDefault(x => x.Label == label);
+            if (p is null) { log?.Invoke($"[EDL] {label} 不存在，跳过。"); continue; }
+            ErasePartition(p, log);
+        }
+        log?.Invoke("[EDL] ✓ 恢复出厂完成。");
+    }
+
+    /// <summary>Erases the FRP partition through firehose.</summary>
+    public void WipeFrp(Action<string>? log = null)
+    {
+        var p = GetPartitions(log).FirstOrDefault(x => x.Label == "frp")
+            ?? throw new InvalidOperationException("分区表中未找到 frp 分区。");
+        ErasePartition(p, log);
+        log?.Invoke("[EDL] ✓ FRP 已清除。");
+    }
+
+    /// <summary>Formats a full LUN by erasing every partition on it.</summary>
+    public void FormatLun(int lun, Action<string>? log = null)
+    {
+        var targets = GetPartitions(log).Where(p => p.Lun == lun).ToList();
+        log?.Invoke($"[EDL] 格式化 LUN {lun}（{targets.Count} 个分区）…");
+        foreach (var p in targets)
+            ErasePartition(p, log);
+        log?.Invoke($"[EDL] ✓ LUN {lun} 已格式化。");
+    }
+
+    /// <summary>
+    /// Dynamic super flash (EDL 动态 super): writes a rebuilt super.img back through firehose.
+    /// </summary>
+    public async Task<bool> FlashSuperAsync(string superImgPath, Action<double>? progress = null,
+        Action<string>? log = null, CancellationToken ct = default)
+    {
+        var p = GetPartitions(log).FirstOrDefault(x => x.Label == "super")
+            ?? throw new InvalidOperationException("分区表中未找到 super 分区。");
+        log?.Invoke($"[EDL] 经 firehose 写入 super（{new FileInfo(superImgPath).Length / 1024 / 1024} MiB）…");
+        await Task.Run(() => WritePartition(p, superImgPath, progress), ct).ConfigureAwait(false);
+        log?.Invoke("[EDL] ✓ super 写入完成。");
+        return true;
+    }
+
     private static EventHandler<(long Current, long Total)> MakeProgress(Action<double>? progress)
         => (_, args) => progress?.Invoke(args.Total > 0 ? Math.Clamp(args.Current / (double)args.Total, 0, 1) : 0);
 

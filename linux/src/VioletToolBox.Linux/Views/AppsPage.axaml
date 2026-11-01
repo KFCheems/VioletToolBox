@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.AppsPage"
+             x:DataType="vm:AppsPageViewModel">
+  <StackPanel>
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+      <TextBlock Grid.Column="0" Text="应用与文件" Classes="h1" />
+      <Button Grid.Column="1" Classes="violet" Content="刷新" Command="{Binding RefreshCommand}" />
+    </Grid>
+
+    <Grid ColumnDefinitions="1*,1*" ColumnSpacing="12" MaxWidth="1100" HorizontalAlignment="Left">
+      <Border Grid.Column="0" Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="应用管理" FontWeight="Medium" />
+          <TextBox Text="{Binding Filter}" PlaceholderText="过滤包名" />
+          <ListBox ItemsSource="{Binding Apps}" SelectedItem="{Binding Selected}" MinHeight="300">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:AppRow">
+                <TextBlock Text="{Binding Display}" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <WrapPanel Orientation="Horizontal">
+            <Button Content="冻结" Margin="0,0,8,8" Command="{Binding FreezeCommand}" />
+            <Button Content="解冻" Margin="0,0,8,8" Command="{Binding UnfreezeCommand}" />
+            <Button Content="卸载" Margin="0,0,8,8" Command="{Binding UninstallCommand}" />
+            <Button Classes="violet" Content="安装 APK" Margin="0,0,8,8" Command="{Binding InstallApkCommand}" />
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Grid.Column="1" Classes="card">
+        <StackPanel Spacing="8">
+          <TextBlock Text="文件传输" FontWeight="Medium" />
+          <TextBox Text="{Binding RemotePath}" PlaceholderText="/sdcard/…" />
+          <TextBox Text="{Binding LocalPath}" PlaceholderText="本地路径（拉取保存到）" />
+          <WrapPanel Orientation="Horizontal">
+            <Button Classes="violet" Content="推送 →" Margin="0,0,8,8" Command="{Binding PushCommand}" />
+            <Button Content="← 拉取" Margin="0,0,8,8" Command="{Binding PullCommand}" />
+            <Button Content="删除设备文件" Margin="0,0,8,8" Command="{Binding DeleteRemoteCommand}" />
+          </WrapPanel>
+          <ListBox ItemsSource="{Binding RemoteFiles}" MaxHeight="220" />
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <TextBlock Text="{Binding Status}" Margin="0,8,0,0" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" MaxWidth="1100" HorizontalAlignment="Left" />
+  </StackPanel>
+</UserControl>

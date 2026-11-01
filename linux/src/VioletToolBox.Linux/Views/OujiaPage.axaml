@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.OujiaPage"
+             x:DataType="vm:OujiaPageViewModel">
+  <StackPanel>
+    <TextBlock Text="欧加线刷（OPPO / 一加 / realme）" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="900" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <TextBlock Text="全量包模式" FontWeight="Medium" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding PackageDir}" PlaceholderText="解包后的全量包目录" />
+          <Button Grid.Column="1" Content="选择目录…" Command="{Binding PickDirCommand}" />
+        </Grid>
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+          <TextBlock Grid.Column="0" Text="模式" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding Modes}" SelectedItem="{Binding ModeName}" MinWidth="170" HorizontalAlignment="Left" />
+          <Button Grid.Column="2" Content="ARB 检测" Command="{Binding CheckArbCommand}" />
+          <Button Grid.Column="3" Classes="violet" Content="开始线刷" Command="{Binding StartCommand}" />
+        </Grid>
+        <TextBlock Text="{Binding ArbInfo}" Foreground="#B7AFCE" FontSize="12" />
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="停止" Command="{Binding StopCommand}" />
+          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" VerticalAlignment="Center" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <Border Classes="card" MaxWidth="900" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <TextBlock Text="小米官方线刷（flash_all.sh 原生 Linux 脚本）" FontWeight="Medium" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding XiaomiDir}" PlaceholderText="已解包的小米线刷目录（含 flash_all.sh）" IsReadOnly="True" />
+          <Button Grid.Column="1" Content="选择 .tgz 并解包" Command="{Binding PickXiaomiDirCommand}" />
+        </Grid>
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+          <TextBlock Grid.Column="0" Text="脚本" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding XiaomiScripts}" SelectedItem="{Binding XiaomiScript}" MinWidth="240" HorizontalAlignment="Left" />
+          <Button Grid.Column="2" Classes="violet" Content="执行线刷" Command="{Binding RunXiaomiCommand}" />
+        </Grid>
+        <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.DownloadCenterPage"
+             x:DataType="vm:DownloadCenterPageViewModel">
+  <StackPanel>
+    <TextBlock Text="下载专区" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+          <ComboBox Grid.Column="0" ItemsSource="{Binding Sources}" SelectedItem="{Binding Source}" MinWidth="110" />
+          <TextBox Grid.Column="1" Text="{Binding Keyword}" PlaceholderText="机型 / MTM / 关键词 / 页面URL（url 源）" />
+          <Button Grid.Column="2" Classes="violet" Content="查询" Command="{Binding QueryCommand}" />
+        </Grid>
+        <ListBox ItemsSource="{Binding Results}" SelectedItem="{Binding Selected}" MinHeight="260">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:RomRow">
+              <Grid ColumnDefinitions="*,110">
+                <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Medium" />
+                <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="{DynamicResource MutedBrush}" FontSize="11" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Classes="violet" Content="aria2 下载所选" Command="{Binding DownloadCommand}" />
+          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>
