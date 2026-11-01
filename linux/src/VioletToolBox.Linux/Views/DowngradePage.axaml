@@ -11,7 +11,7 @@
       </StackPanel>
     </Grid>
 
-    <Border Classes="card" MaxWidth="900" HorizontalAlignment="Left">
+    <Border Classes="panel" MaxWidth="900" HorizontalAlignment="Left">
       <StackPanel Spacing="10">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
           <TextBox Grid.Column="0" Text="{Binding AssistantApk}" PlaceholderText="ColorOS 助手 APK（可选）" IsReadOnly="True" />
@@ -23,7 +23,7 @@
         </Grid>
         <StackPanel Orientation="Horizontal" Spacing="12">
           <CheckBox Content="仅查询降级包（不执行）" IsChecked="{Binding QueryOnly}" />
-          <Button Classes="violet" Content="运行降级工具" Command="{Binding RunCommand}" />
+          <Button Classes="primary" Content="运行降级工具" Command="{Binding RunCommand}" />
         </StackPanel>
         <ListBox ItemsSource="{Binding Packages}" MaxHeight="240">
           <ListBox.ItemTemplate>
@@ -33,7 +33,7 @@
           </ListBox.ItemTemplate>
         </ListBox>
         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
-        <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#5C5670" TextWrapping="Wrap" />
       </StackPanel>
     </Border>
   </StackPanel>

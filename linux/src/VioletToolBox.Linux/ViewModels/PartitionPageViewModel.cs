@@ -26,14 +26,34 @@ public sealed class PartitionPageViewModel : ViewModelBase
     private double _percent;
     private string _progressText = string.Empty;
 
+    private string _filter = string.Empty;
+    private string _flashScript = string.Empty;
+    private string _logText = string.Empty;
+    private bool _generateXml = true;
+
     public PartitionPageViewModel(Action<string> log, IFilePickers pickers)
     {
         _log = log;
         _pickers = pickers;
         RefreshCommand = new AsyncCommand(RefreshAsync);
+        RefreshFastbootCommand = new AsyncCommand(RefreshFastbootAsync);
         ReadCommand = new AsyncCommand(() => RunAsync(ReadAsync));
         WriteCommand = new AsyncCommand(() => RunAsync(WriteAsync));
+        EraseCommand = new AsyncCommand(() => RunAsync(EraseAsync));
+        CancelCommand = new RelayCommand(Cancel);
+        PickScriptCommand = new AsyncCommand(PickScriptAsync);
     }
+
+    public AsyncCommand RefreshFastbootCommand { get; }
+    public AsyncCommand EraseCommand { get; }
+    public RelayCommand CancelCommand { get; }
+    public AsyncCommand PickScriptCommand { get; }
+
+    public string Filter { get => _filter; set => SetProperty(ref _filter, value); }
+    public string FlashScript { get => _flashScript; set => SetProperty(ref _flashScript, value); }
+    public string Log { get => _logText; set => SetProperty(ref _logText, value); }
+    public bool GenerateXml { get => _generateXml; set => SetProperty(ref _generateXml, value); }
+    public string SelectionSummary => $"已选 {Partitions.Count}/{Partitions.Count} - 0 B";
 
     public AsyncCommand RefreshCommand { get; }
     public AsyncCommand ReadCommand { get; }
@@ -69,6 +89,38 @@ public sealed class PartitionPageViewModel : ViewModelBase
     public double Percent { get => _percent; set => SetProperty(ref _percent, value); }
     public string ProgressText { get => _progressText; set => SetProperty(ref _progressText, value); }
 
+    private async Task RefreshFastbootAsync()
+    {
+        Mode = "fastboot";
+        IsFastbootMode = true;
+        await RefreshAsync().ConfigureAwait(true);
+    }
+
+    private async Task PickScriptAsync()
+    {
+        var f = await _pickers.PickOpenFileAsync("选择刷写脚本", "bat", "sh", "xml").ConfigureAwait(true);
+        if (f is not null) FlashScript = f;
+    }
+
+    private void Cancel()
+    {
+        ProgressText = "已请求停止，当前分区完成后将结束操作。";
+        Log += "已请求停止。\n";
+    }
+
+    private async Task EraseAsync()
+    {
+        if (Selected is null) { ProgressText = "请先选择分区。"; return; }
+        var adb = await _adb.FirstOnlineDeviceAsync().ConfigureAwait(true)
+            ?? throw new InvalidOperationException("擦除分区需要 ADB 在线设备（root）。");
+        ProgressText = $"擦除 {Selected.Name} 头部（4MB）…";
+        Log += $"[Erase] {Selected.Name}\n";
+        await _adb.SuShellAsync(adb.Serial,
+            $"dd if=/dev/zero of=/dev/block/bootdevice/by-name/{Selected.Name} bs=4096 count=1024").ConfigureAwait(true);
+        ProgressText = $"✓ {Selected.Name} 已擦除。";
+        Log += $"[Erase] {Selected.Name} OK\n";
+    }
+
     private async Task RefreshAsync()
     {
         Partitions.Clear();
@@ -93,6 +145,7 @@ public sealed class PartitionPageViewModel : ViewModelBase
         catch (Exception ex)
         {
             ProgressText = $"读取分区表失败：{ex.Message}";
+            Log += $"{ex.Message}\n";
             _log($"[分区] {ex.Message}");
         }
     }

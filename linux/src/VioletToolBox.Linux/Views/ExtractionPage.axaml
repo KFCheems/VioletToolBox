@@ -15,7 +15,7 @@
     </Grid>
 
     <!-- Step 1: Source & Output -->
-    <Border Classes="card" MaxWidth="1000" HorizontalAlignment="Stretch">
+    <Border Classes="panel" MaxWidth="1000" HorizontalAlignment="Stretch">
       <StackPanel Spacing="12">
         <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
           <TextBlock Grid.Column="0" Text="① 固件来源" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" />
@@ -27,8 +27,8 @@
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
           <TextBlock Grid.Column="0" Text="② 输出位置" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" />
           <TextBox Grid.Column="1" Text="{Binding OutputDir}" PlaceholderText="解包产物输出目录（镜像 / 清单 / super）" />
-          <Border Grid.Column="2" Background="#251C42" CornerRadius="6" Padding="8,4" VerticalAlignment="Center">
-            <TextBlock Text="输出可复用" FontSize="10.5" FontWeight="Bold" Foreground="#C4B5FD" />
+          <Border Grid.Column="2" Background="#EDF0FD" CornerRadius="6" Padding="8,4" VerticalAlignment="Center">
+            <TextBlock Text="输出可复用" FontSize="10.5" FontWeight="Bold" Foreground="#6A3FCB" />
           </Border>
         </Grid>
       </StackPanel>
@@ -38,7 +38,7 @@
     <Grid ColumnDefinitions="1*,380" ColumnSpacing="16" MaxWidth="1000" HorizontalAlignment="Stretch">
 
       <!-- Payload partitions picker -->
-      <Border Grid.Column="0" Classes="card">
+      <Border Grid.Column="0" Classes="panel">
         <DockPanel>
           <StackPanel DockPanel.Dock="Top" Spacing="10">
             <Grid ColumnDefinitions="*,Auto">
@@ -46,11 +46,11 @@
               <TextBlock Grid.Column="1" Text="支持 zip 与 URL 流式解包" Classes="muted" />
             </Grid>
             <StackPanel Orientation="Horizontal" Spacing="10">
-              <Button Classes="violet" Content="解析 manifest 清单" Command="{Binding AnalyzeCommand}" Padding="16,9" />
+              <Button Classes="primary" Content="解析 manifest 清单" Command="{Binding AnalyzeCommand}" Padding="16,9" />
               <Button Content="⬇ 解出所选分区" Command="{Binding DumpAllCommand}" Padding="16,9" />
             </StackPanel>
           </StackPanel>
-          <Border DockPanel.Dock="Bottom" Classes="card-subtle" Padding="6" Margin="0,12,0,0" MinHeight="260">
+          <Border DockPanel.Dock="Bottom" Classes="panel" Padding="6" Margin="0,12,0,0" MinHeight="260">
             <ListBox ItemsSource="{Binding PayloadPartitions}">
               <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="payload:PartitionItem">
@@ -70,12 +70,12 @@
 
       <!-- OPLUS firmware ops -->
       <StackPanel Grid.Column="1" Spacing="16">
-        <Border Classes="card">
+        <Border Classes="panel">
           <StackPanel Spacing="10">
             <TextBlock Text="④ 欧加固件专用操作" Classes="h2" Margin="0" />
-            <Button Classes="violet" Content="📦 提取 .ofp（ColorOS 线刷包）" Command="{Binding ExtractOfpCommand}"
+            <Button Classes="primary" Content="📦 提取 .ofp（ColorOS 线刷包）" Command="{Binding ExtractOfpCommand}"
                     HorizontalAlignment="Stretch" Padding="0,10" />
-            <Button Classes="violet" Content="📦 提取 .ops（一加售后包）" Command="{Binding ExtractOpsCommand}"
+            <Button Classes="primary" Content="📦 提取 .ops（一加售后包）" Command="{Binding ExtractOpsCommand}"
                     HorizontalAlignment="Stretch" Padding="0,10" />
             <Separator Background="{DynamicResource BorderMutedBrush}" Height="1" Margin="0,2" />
             <Button Content="融合分段 super → super.img" Command="{Binding MergeSuperCommand}"
@@ -86,15 +86,15 @@
         </Border>
 
         <!-- Live progress card -->
-        <Border Classes="card">
+        <Border Classes="panel">
           <StackPanel Spacing="8">
             <Grid ColumnDefinitions="*,Auto">
               <TextBlock Grid.Column="0" Text="任务执行状态" Classes="h2" Margin="0" />
               <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}"
-                         FontSize="13" FontWeight="Bold" Foreground="#C4B5FD" />
+                         FontSize="13" FontWeight="Bold" Foreground="#6A3FCB" />
             </Grid>
             <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" />
-            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#C4B5FD" FontSize="12.5" />
+            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#6A3FCB" FontSize="12.5" />
           </StackPanel>
         </Border>
       </StackPanel>

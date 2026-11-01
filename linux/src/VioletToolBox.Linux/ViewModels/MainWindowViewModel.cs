@@ -63,12 +63,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
         ToggleLogCommand = new RelayCommand(() => IsLogExpanded = !IsLogExpanded);
         ClearLogCommand = new RelayCommand(() => LogText = $"[已清空日志 {DateTime.Now:HH:mm:ss}]\n");
 
-        var requested = Program.InitialPage;
-        _currentPage = string.IsNullOrWhiteSpace(requested)
-            ? DevicePage
-            : NavItems.FirstOrDefault(n => n.Title.Equals(requested, StringComparison.OrdinalIgnoreCase)
-                                        || n.Title.StartsWith(requested, StringComparison.OrdinalIgnoreCase))?.Page
-              ?? DevicePage;
+        _currentPage = ResolveInitialPage();
+
     }
 
     public RelayCommand ToggleLogCommand { get; }
@@ -92,6 +88,34 @@ public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
     public AboutPageViewModel AboutPage { get; }
 
     public ObservableCollection<NavItem> NavItems { get; }
+
+    /// <summary>Resolves the --page startup request against upstream page titles (case-insensitive).</summary>
+    private ViewModelBase ResolveInitialPage()
+    {
+        var requested = Program.InitialPage?.Trim();
+        if (string.IsNullOrWhiteSpace(requested)) return DevicePage;
+        return requested.ToLowerInvariant() switch
+        {
+            "主页" or "首页" or "home" => DevicePage,
+            "投屏" => ScreenPage,
+            "基本刷入" => FlashPage,
+            "可视刷写" or "可视分区" => PartitionPage,
+            "欧加线刷" or "欧加刷机" => OujiaPage,
+            "edl刷写" or "edl" => EdlPage,
+            "降级助手" => DowngradePage,
+            "模块专区" => ModulePage,
+            "断点续传" => DownloadPage,
+            "文件传输" => AppsPage,
+            "脱机修补" => BootPatchPage,
+            "应用管理" => AppsPage,
+            "安卓通用" => GenericPage,
+            "payload" or "解包" => ExtractionPage,
+            "备份助手" => BackupPage,
+            "rom专区" or "镜像下载" or "联想查包" or "下载专区" => DownloadCenterPage,
+            "关于" => AboutPage,
+            _ => DevicePage,
+        };
+    }
 
     public ViewModelBase CurrentPage
     {

@@ -9,11 +9,11 @@
         <TextBlock Text="应用与文件管理" Classes="h1" Margin="0" />
         <TextBlock Text="第三方应用生命周期管理与设备文件双向传输" Classes="muted" />
       </StackPanel>
-      <Button Grid.Column="1" Classes="violet" Content="⟳ 刷新应用列表" Command="{Binding RefreshCommand}" VerticalAlignment="Center" Padding="18,10" />
+      <Button Grid.Column="1" Classes="primary" Content="⟳ 刷新应用列表" Command="{Binding RefreshCommand}" VerticalAlignment="Center" Padding="18,10" />
     </Grid>
 
     <Grid ColumnDefinitions="1*,1*" ColumnSpacing="12" MaxWidth="1100" HorizontalAlignment="Left">
-      <Border Grid.Column="0" Classes="card">
+      <Border Grid.Column="0" Classes="panel">
         <StackPanel Spacing="8">
           <TextBlock Text="应用管理" FontWeight="Medium" />
           <TextBox Text="{Binding Filter}" PlaceholderText="过滤包名" />
@@ -28,18 +28,18 @@
             <Button Content="冻结" Margin="0,0,8,8" Command="{Binding FreezeCommand}" />
             <Button Content="解冻" Margin="0,0,8,8" Command="{Binding UnfreezeCommand}" />
             <Button Content="卸载" Margin="0,0,8,8" Command="{Binding UninstallCommand}" />
-            <Button Classes="violet" Content="安装 APK" Margin="0,0,8,8" Command="{Binding InstallApkCommand}" />
+            <Button Classes="primary" Content="安装 APK" Margin="0,0,8,8" Command="{Binding InstallApkCommand}" />
           </WrapPanel>
         </StackPanel>
       </Border>
 
-      <Border Grid.Column="1" Classes="card">
+      <Border Grid.Column="1" Classes="panel">
         <StackPanel Spacing="8">
           <TextBlock Text="文件传输" FontWeight="Medium" />
           <TextBox Text="{Binding RemotePath}" PlaceholderText="/sdcard/…" />
           <TextBox Text="{Binding LocalPath}" PlaceholderText="本地路径（拉取保存到）" />
           <WrapPanel Orientation="Horizontal">
-            <Button Classes="violet" Content="推送 →" Margin="0,0,8,8" Command="{Binding PushCommand}" />
+            <Button Classes="primary" Content="推送 →" Margin="0,0,8,8" Command="{Binding PushCommand}" />
             <Button Content="← 拉取" Margin="0,0,8,8" Command="{Binding PullCommand}" />
             <Button Content="删除设备文件" Margin="0,0,8,8" Command="{Binding DeleteRemoteCommand}" />
           </WrapPanel>
@@ -48,6 +48,6 @@
       </Border>
     </Grid>
 
-    <TextBlock Text="{Binding Status}" Margin="0,8,0,0" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" MaxWidth="1100" HorizontalAlignment="Left" />
+    <TextBlock Text="{Binding Status}" Margin="0,8,0,0" FontSize="12.5" Foreground="#5C5670" TextWrapping="Wrap" MaxWidth="1100" HorizontalAlignment="Left" />
   </StackPanel>
 </UserControl>

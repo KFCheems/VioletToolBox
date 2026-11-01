@@ -10,21 +10,21 @@
         <TextBlock Text="版本信息、移植说明与系统环境健康检查" Classes="muted" />
       </StackPanel>
     </Grid>
-    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+    <Border Classes="panel" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="6">
-        <TextBlock Text="{Binding AppVersion}" FontSize="15" FontWeight="Medium" Foreground="#C4B5FD" />
+        <TextBlock Text="{Binding AppVersion}" FontSize="15" FontWeight="Medium" Foreground="#6A3FCB" />
         <TextBlock Text="{Binding Upstream}" Classes="muted" />
-        <TextBlock Text="{Binding PortNote}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+        <TextBlock Text="{Binding PortNote}" TextWrapping="Wrap" Foreground="#5C5670" FontSize="12.5" />
         <TextBlock Text="{Binding License}" TextWrapping="Wrap" Classes="muted" />
       </StackPanel>
     </Border>
-    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+    <Border Classes="panel" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="4">
         <TextBlock Text="环境检查" FontWeight="Medium" Margin="0,0,0,6" />
         <ItemsControl ItemsSource="{Binding Tools}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:ToolStatus">
-              <TextBlock FontSize="12" Margin="0,2" Text="{Binding Display}" Foreground="#B7AFCE" />
+              <TextBlock FontSize="12" Margin="0,2" Text="{Binding Display}" Foreground="#5C5670" />
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>

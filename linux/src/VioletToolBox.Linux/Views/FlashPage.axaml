@@ -4,90 +4,102 @@
              x:Class="VioletToolBox.Linux.Views.FlashPage"
              x:DataType="vm:FlashPageViewModel">
 
-  <StackPanel Spacing="0">
+  <Grid ColumnDefinitions="1*,1*" ColumnSpacing="12">
 
-    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
-      <StackPanel Grid.Column="0" Spacing="2">
-        <TextBlock Text="基本镜像刷入" Classes="h1" Margin="0" />
-        <TextBlock Text="支持针对 boot、init_boot、dtbo、recovery、vbmeta 等常规分区的极速刷写与安全擦除" Classes="muted" />
-      </StackPanel>
-    </Grid>
+    <!-- Left column (upstream layout): 常规操作刷入 / 小米官方线刷 -->
+    <StackPanel Grid.Column="0" Spacing="12">
 
-    <Grid ColumnDefinitions="1.2*,1*" ColumnSpacing="16">
-
-      <!-- Left Column: Flash Form -->
-      <Border Grid.Column="0" Classes="card">
-        <StackPanel Spacing="16">
-
-          <!-- File selector -->
-          <StackPanel Spacing="6">
-            <TextBlock Text="目标镜像文件 (.img / .bin)" FontWeight="SemiBold" FontSize="13" />
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-              <TextBox Grid.Column="0" Text="{Binding ImagePath}" PlaceholderText="点击右侧浏览选择本地镜像文件路径..." />
-              <Button Grid.Column="1" Content="📁 浏览文件..." Command="{Binding BrowseCommand}" Padding="14,8" />
-            </Grid>
+      <Border Classes="panel">
+        <StackPanel Spacing="10">
+          <TextBlock Text="常规操作刷入" Classes="h2" Margin="0" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="分区:" VerticalAlignment="Center" FontSize="12.5" />
+            <ComboBox ItemsSource="{Binding PartitionOptions}" SelectedItem="{Binding SelectedPartition}"
+                      MinWidth="160" />
+            <TextBox Text="{Binding CustomPartition}" PlaceholderText="自定义分区" MinWidth="130" />
           </StackPanel>
-
-          <!-- Partition target -->
-          <StackPanel Spacing="6">
-            <TextBlock Text="选择目标刷写分区" FontWeight="SemiBold" FontSize="13" />
-            <Grid ColumnDefinitions="1*,1*" ColumnSpacing="12">
-              <StackPanel Grid.Column="0" Spacing="4">
-                <TextBlock Text="预设常规分区" Classes="muted" FontSize="11" />
-                <ComboBox ItemsSource="{Binding PartitionOptions}"
-                          SelectedItem="{Binding SelectedPartition}" HorizontalAlignment="Stretch" />
-              </StackPanel>
-              <StackPanel Grid.Column="1" Spacing="4">
-                <TextBlock Text="或者输入自定义分区名" Classes="muted" FontSize="11" />
-                <TextBox Text="{Binding CustomPartition}" PlaceholderText="如: boot_a / abl_b" HorizontalAlignment="Stretch" />
-              </StackPanel>
-            </Grid>
+          <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+            <TextBox Grid.Column="0" Text="{Binding ImagePath}" PlaceholderText="请选择需要刷入的文件..." />
+            <Button Grid.Column="1" Content="📁 选择" Command="{Binding BrowseCommand}" />
+            <Button Grid.Column="2" Classes="primary" Content="开始刷入" Command="{Binding FlashCommand}" />
+          </Grid>
+          <StackPanel Orientation="Horizontal" Spacing="16">
+            <CheckBox Content="自动重启" IsChecked="{Binding AutoReboot}" />
+            <CheckBox Content="等待FB设备" IsChecked="{Binding WaitForFastboot}" />
+            <CheckBox Content="禁用DM校验" IsChecked="{Binding DisableVerity}" />
           </StackPanel>
-
-          <!-- Security Flags -->
-          <Border Classes="card-subtle">
-            <StackPanel Spacing="6">
-              <CheckBox Content="附加禁用 AVB 校验 (--disable-verity --disable-verification)"
-                        IsChecked="{Binding DisableVerity}" FontWeight="Medium" />
-              <TextBlock Text="* 刷入自定义 vbmeta 时勾选此项，可避免开机 DM-Verity 验证失败卡开机循环 (Bootloop)"
-                         Classes="muted" FontSize="11" Margin="28,0,0,0" />
-            </StackPanel>
-          </Border>
-
-          <!-- Action Buttons -->
-          <StackPanel Spacing="10">
-            <Grid ColumnDefinitions="1.2*,1*" ColumnSpacing="12">
-              <Button Grid.Column="0" Classes="violet" Content="⚡ 开始刷入分区"
-                      Command="{Binding FlashCommand}" HorizontalAlignment="Stretch" Padding="0,12" FontSize="14" />
-              <Button Grid.Column="1" Classes="danger" Content="⚠️ 擦除目标分区"
-                      Command="{Binding EraseCommand}" HorizontalAlignment="Stretch" Padding="0,12" FontSize="13" />
-            </Grid>
-            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#C4B5FD" FontSize="12.5" />
-          </StackPanel>
-
+          <Button Classes="danger" Content="擦除分区" Command="{Binding EraseCommand}"
+                  HorizontalAlignment="Left" />
+          <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#5C5670" FontSize="12.5" />
         </StackPanel>
       </Border>
 
-      <!-- Right Column: Operations Guide & Notice -->
-      <StackPanel Grid.Column="1" Spacing="16">
-        <Border Classes="card">
-          <StackPanel Spacing="12">
-            <TextBlock Text="💡 刷入说明与机制" Classes="h2" Margin="0" />
-            <TextBlock Text="1. 通信调度机制：" FontWeight="SemiBold" Foreground="#DDD6FE" />
-            <TextBlock Text="   • 检测到 Fastboot 设备时，优先采用 fastboot flash 指令直接刷入。" Classes="muted" />
-            <TextBlock Text="   • 在开机系统模式下，工具将自动请求 ADB Root 并使用 dd 块级别写入。" Classes="muted" />
+      <Border Classes="panel">
+        <StackPanel Spacing="10">
+          <TextBlock Text="小米官方线刷" Classes="h2" Margin="0" />
+          <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+            <TextBox Grid.Column="0" Text="{Binding XiaomiDir}"
+                     PlaceholderText="请选择一个解压好的刷机包文件..." />
+            <Button Grid.Column="1" Content="📁 选择" Command="{Binding PickXiaomiDirCommand}" />
+            <Button Grid.Column="2" Classes="primary" Content="开始线刷" Command="{Binding RunXiaomiCommand}" />
+          </Grid>
+          <ComboBox ItemsSource="{Binding XiaomiScripts}" SelectedItem="{Binding XiaomiScript}"
+                    HorizontalAlignment="Left" MinWidth="260" />
+        </StackPanel>
+      </Border>
 
-            <Separator Background="{DynamicResource BorderMutedBrush}" Height="1" />
+      <Border Classes="panel">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Bootloader 操作" Classes="h2" Margin="0" />
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <ComboBox SelectedItem="{Binding BlCommand}" HorizontalAlignment="Left" MinWidth="220">
+              <ComboBoxItem Content="fastboot flashing unlock" />
+              <ComboBoxItem Content="fastboot oem unlock" />
+              <ComboBoxItem Content="fastboot flashing lock" />
+              <ComboBoxItem Content="fastboot oem lock" />
+            </ComboBox>
+            <Button Grid.Column="1" Classes="primary" Content="执行指令" Command="{Binding RunBlCommand}" />
+          </Grid>
+        </StackPanel>
+      </Border>
 
-            <TextBlock Text="2. 常见问题排查：" FontWeight="SemiBold" Foreground="#DDD6FE" />
-            <TextBlock Text="   • 刷入 boot / init_boot 请务必确认与当前系统版本基线一致。" Classes="muted" />
-            <TextBlock Text="   • A/B 分区设备如果未指定后缀，Fastboot 将写入当前活动槽位 (Active Slot)。" Classes="muted" />
-            <TextBlock Text="   • 若提示 No such partition，请检查分区名称或进入 FastbootD 模式刷写动态分区。" Classes="muted" />
-          </StackPanel>
-        </Border>
-      </StackPanel>
+    </StackPanel>
 
-    </Grid>
+    <!-- Right column: 扩展功能 (upstream: 8 buttons, 2 columns) + log -->
+    <StackPanel Grid.Column="1" Spacing="12">
 
-  </StackPanel>
+      <Border Classes="panel">
+        <StackPanel Spacing="10">
+          <TextBlock Text="扩展功能" Classes="h2" Margin="0" />
+          <Grid ColumnDefinitions="1*,1*" ColumnSpacing="8">
+            <Button Grid.Column="0" Content="格式化设备【双清】" Margin="0,0,0,8" Command="{Binding FormatDeviceCommand}" />
+            <Button Grid.Column="1" Content="擦除谷歌锁" Margin="0,0,0,8" Command="{Binding WipeFrpCommand}" />
+            <Button Grid.Column="0" Grid.Row="1" Content="修复ADB异常" Margin="0,0,0,8" Command="{Binding FixAdbCommand}" />
+            <Button Grid.Column="1" Grid.Row="1" Content="强开小米USB安全设置" Margin="0,0,0,8" Command="{Binding MiUsbCommand}" />
+            <Button Grid.Column="0" Grid.Row="2" Content="ADB读取DDR版本" Margin="0,0,0,8" Command="{Binding ReadDdrCommand}" />
+            <Button Grid.Column="1" Grid.Row="2" Content="ADB强开基带调试端口" Margin="0,0,0,8" Command="{Binding DiagCommand}" />
+            <Button Grid.Column="0" Grid.Row="3" Content="ADB切换文件传输" Margin="0,0,0,8" Command="{Binding MtpCommand}" />
+            <Button Grid.Column="1" Grid.Row="3" Content="欧加真OCDT分析" Margin="0,0,0,8" Command="{Binding OcdtCommand}" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="panel" MinHeight="220">
+        <StackPanel Spacing="8">
+          <TextBlock Text="执行日志" Classes="h2" Margin="0" />
+          <TextBox Text="{Binding Log}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                   Background="#FAFAFD" BorderThickness="0" MinHeight="180" FontSize="12"
+                   Foreground="#44405A"
+                   FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, monospace" />
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="{Binding SpeedText}" Classes="muted" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}"
+                       Foreground="{DynamicResource PrimaryBrush}" FontWeight="Bold" />
+          </Grid>
+          <ProgressBar Value="{Binding Percent}" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </Grid>
 </UserControl>

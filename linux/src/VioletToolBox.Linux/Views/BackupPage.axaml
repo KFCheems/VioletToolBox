@@ -11,7 +11,7 @@
       </StackPanel>
     </Grid>
 
-    <Border Classes="card" MaxWidth="760" HorizontalAlignment="Left">
+    <Border Classes="panel" MaxWidth="760" HorizontalAlignment="Left">
       <StackPanel Spacing="10">
         <StackPanel Orientation="Horizontal" Spacing="14">
           <RadioButton GroupName="bmode" Content="照片 (DCIM)" IsChecked="{Binding IsPhotos}" />
@@ -24,8 +24,8 @@
         </Grid>
         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Classes="violet" Content="开始备份" Command="{Binding BackupCommand}" />
-          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" />
+          <Button Classes="primary" Content="开始备份" Command="{Binding BackupCommand}" />
+          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#5C5670" TextWrapping="Wrap" />
         </StackPanel>
       </StackPanel>
     </Border>

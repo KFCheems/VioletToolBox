@@ -4,167 +4,168 @@
         xmlns:v="using:VioletToolBox.Linux.Views"
         x:Class="VioletToolBox.Linux.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="紫罗兰工具箱 · Linux 原生移植版"
-        Width="1320" Height="860"
-        MinWidth="1020" MinHeight="680"
-        Background="#0D0B14"
+        Title="紫罗兰工具箱"
+        Width="1000" Height="800"
+        MinWidth="880" MinHeight="640"
+        Background="{DynamicResource WindowBgBrush}"
         Icon="avares://VioletToolBox/Assets/logo2.ico">
 
   <Window.DataTemplates>
     <DataTemplate DataType="vm:DevicePageViewModel"><v:DevicePage /></DataTemplate>
+    <DataTemplate DataType="vm:ScreenPageViewModel"><v:ScreenPage /></DataTemplate>
     <DataTemplate DataType="vm:FlashPageViewModel"><v:FlashPage /></DataTemplate>
     <DataTemplate DataType="vm:PartitionPageViewModel"><v:PartitionPage /></DataTemplate>
-    <DataTemplate DataType="vm:ExtractionPageViewModel"><v:ExtractionPage /></DataTemplate>
-    <DataTemplate DataType="vm:EdlPageViewModel"><v:EdlPage /></DataTemplate>
-    <DataTemplate DataType="vm:ScreenPageViewModel"><v:ScreenPage /></DataTemplate>
     <DataTemplate DataType="vm:OujiaPageViewModel"><v:OujiaPage /></DataTemplate>
+    <DataTemplate DataType="vm:EdlPageViewModel"><v:EdlPage /></DataTemplate>
+    <DataTemplate DataType="vm:DowngradePageViewModel"><v:DowngradePage /></DataTemplate>
     <DataTemplate DataType="vm:ModulePageViewModel"><v:ModulePage /></DataTemplate>
+    <DataTemplate DataType="vm:DownloadPageViewModel"><v:DownloadPage /></DataTemplate>
     <DataTemplate DataType="vm:AppsPageViewModel"><v:AppsPage /></DataTemplate>
     <DataTemplate DataType="vm:BootPatchPageViewModel"><v:BootPatchPage /></DataTemplate>
     <DataTemplate DataType="vm:GenericPageViewModel"><v:GenericPage /></DataTemplate>
+    <DataTemplate DataType="vm:ExtractionPageViewModel"><v:ExtractionPage /></DataTemplate>
     <DataTemplate DataType="vm:BackupPageViewModel"><v:BackupPage /></DataTemplate>
     <DataTemplate DataType="vm:DownloadCenterPageViewModel"><v:DownloadCenterPage /></DataTemplate>
-    <DataTemplate DataType="vm:DowngradePageViewModel"><v:DowngradePage /></DataTemplate>
     <DataTemplate DataType="vm:AboutPageViewModel"><v:AboutPage /></DataTemplate>
-    <DataTemplate DataType="vm:DownloadPageViewModel"><v:DownloadPage /></DataTemplate>
   </Window.DataTemplates>
 
-  <Grid ColumnDefinitions="240,*">
+  <Grid RowDefinitions="36,*,30">
 
-    <!-- Sidebar with Glass Glow -->
-    <Border Grid.Column="0" Background="{DynamicResource BgSidebarBrush}"
-            BorderBrush="{DynamicResource BorderMutedBrush}" BorderThickness="0,0,1,0">
-      <DockPanel>
-
-        <!-- Brand Header -->
-        <Border DockPanel.Dock="Top" Padding="20,24,18,20"
-                BorderBrush="#1F1A30" BorderThickness="0,0,0,1">
-          <Grid ColumnDefinitions="Auto,*">
-            <Border Grid.Column="0" Width="40" Height="40" CornerRadius="10"
-                    Background="#2A1B54" BorderBrush="#7C3AED" BorderThickness="1.5"
-                    Margin="0,0,12,0" VerticalAlignment="Center">
-              <TextBlock Text="V" FontSize="20" FontWeight="Black"
-                         Foreground="#C4B5FD" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Border>
-            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-              <TextBlock Text="紫罗兰工具箱" FontSize="16" FontWeight="Bold" Foreground="#EDE9FE" />
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <Border Background="#2E1065" CornerRadius="4" Padding="5,1">
-                  <TextBlock Text="Linux" FontSize="10" FontWeight="Bold" Foreground="#A78BFA" />
-                </Border>
-                <TextBlock Text="v3.7 移植版" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
-              </StackPanel>
-            </StackPanel>
-          </Grid>
-        </Border>
-
-        <!-- Sidebar Footer Status -->
-        <Border DockPanel.Dock="Bottom" Padding="16,12" Background="#0F0C1A"
-                BorderBrush="#1F1A30" BorderThickness="0,1,0,0">
-          <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
-            <Ellipse Grid.Column="0" Width="8" Height="8" Fill="#10B981" Margin="0,0,8,0" />
-            <TextBlock Grid.Column="1" Text="引擎就绪 (Fedora/Linux)" FontSize="11" Foreground="#9CA3AF" />
-          </Grid>
-        </Border>
-
-        <!-- Nav Items List -->
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-          <ListBox x:Name="NavList" ItemsSource="{Binding NavItems}"
-                   SelectedIndex="0" Margin="10,12,10,12"
-                   SelectionChanged="OnNavSelectionChanged">
-            <ListBox.Styles>
-              <Style Selector="ListBoxItem">
-                <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Padding" Value="12,10" />
-                <Setter Property="Margin" Value="0,2" />
-                <Setter Property="Transitions">
-                  <Transitions>
-                    <BrushTransition Property="Background" Duration="0:0:0.1" />
-                  </Transitions>
-                </Setter>
-              </Style>
-              <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                <Setter Property="Background" Value="#1C172E" />
-              </Style>
-              <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                <Setter Property="Background">
-                  <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
-                    <GradientStop Color="#2C1B58" Offset="0" />
-                    <GradientStop Color="#201542" Offset="1" />
-                  </LinearGradientBrush>
-                </Setter>
-                <Setter Property="BorderBrush" Value="#8B5CF6" />
-                <Setter Property="BorderThickness" Value="1.5,0,0,0" />
-              </Style>
-            </ListBox.Styles>
-            <ListBox.ItemTemplate>
-              <DataTemplate x:DataType="vm:NavItem">
-                <Grid ColumnDefinitions="26,*,Auto">
-                  <TextBlock Grid.Column="0" Text="{Binding Glyph}" FontSize="14"
-                             Foreground="#A78BFA" VerticalAlignment="Center" />
-                  <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="13.5"
-                             FontWeight="Medium" VerticalAlignment="Center" />
-                  <TextBlock Grid.Column="2" Text="{Binding Category}" FontSize="10"
-                             Foreground="#5B5377" VerticalAlignment="Center" />
-                </Grid>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-        </ScrollViewer>
-
-      </DockPanel>
+    <!-- ===== Title bar (upstream purple) ===== -->
+    <Border Grid.Row="0" Background="{DynamicResource TitleBarBrush}">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
+        <TextBlock Grid.Column="0" Text="紫罗兰工具箱" FontSize="13.5" FontWeight="Bold"
+                   Foreground="White" Margin="14,0,0,0" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="Linux 移植版" FontSize="11" Foreground="#E4D8FA"
+                   Margin="10,0,0,0" VerticalAlignment="Center" />
+        <Button Grid.Column="3" Classes="titleBtn" Content="—" Click="OnMinimize" />
+        <Button Grid.Column="4" Classes="titleBtn" Content="✕" Click="OnClose" />
+      </Grid>
     </Border>
 
-    <!-- Main Content Workspace -->
-    <Grid Grid.Column="1" RowDefinitions="*,Auto" Margin="24,20,24,14">
+    <!-- ===== Body: sidebar + content ===== -->
+    <Grid Grid.Row="1" ColumnDefinitions="196,*">
 
-      <!-- Page Content Viewer -->
-      <ScrollViewer Grid.Row="0" Margin="0,0,0,12">
-        <ContentControl Content="{Binding CurrentPage}" HorizontalContentAlignment="Stretch" />
-      </ScrollViewer>
+      <!-- Sidebar (upstream: white, grouped with chevrons, selected = gray row + blue strip) -->
+      <Border Grid.Column="0" Background="{DynamicResource SidebarBgBrush}"
+              BorderBrush="{DynamicResource BorderMutedBrush}" BorderThickness="0,0,1,0">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Margin="6,8,6,8">
 
-      <!-- Bottom Log & Device Status Console -->
-      <Border Grid.Row="1" Background="#110E1C" BorderBrush="{DynamicResource BorderMutedBrush}"
-              BorderThickness="1" CornerRadius="10" Padding="14,10"
-              BoxShadow="0 -4 20 #12000000">
-        <Grid RowDefinitions="Auto,Auto">
+            <ListBox x:Name="TopNav" SelectedIndex="-1" Margin="0,0,0,4" SelectionChanged="OnNavSelectionChanged">
+              <ListBoxItem Padding="10,7">
+                <TextBlock Text="🏠 主页" FontSize="13" />
+              </ListBoxItem>
+              <ListBoxItem Padding="10,7">
+                <TextBlock Text="🖥 投屏" FontSize="13" />
+              </ListBoxItem>
+            </ListBox>
 
-          <!-- Log Drawer Header -->
-          <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,0,0,6">
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-              <TextBlock Text="终端执行日志" FontSize="11.5" FontWeight="Bold" Foreground="#A78BFA" />
-              <Border Background="#251C42" CornerRadius="4" Padding="6,1">
-                <TextBlock Text="LIVE" FontSize="9" FontWeight="Bold" Foreground="#C4B5FD" />
-              </Border>
-            </StackPanel>
+            <!-- 刷写功能 group -->
+            <Button x:Name="FlashGroupHeader" Classes="groupHeader" Content="▾ 刷写功能" Click="OnToggleFlashGroup" />
+            <ListBox x:Name="FlashNav" SelectedIndex="-1" Margin="0,2,0,8" SelectionChanged="OnNavSelectionChanged">
+              <ListBoxItem Padding="26,6"><TextBlock Text="基本刷入" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="可视刷写" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="欧加线刷" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="EDL刷写" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="降级助手" FontSize="12.5" /></ListBoxItem>
+            </ListBox>
 
-            <TextBlock Grid.Column="1" Text="{Binding DeviceSummary}" FontSize="11.5"
-                       Foreground="{DynamicResource TextMutedBrush}" Margin="16,0" VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis" />
+            <!-- 实用功能 group -->
+            <Button x:Name="UtilGroupHeader" Classes="groupHeader" Content="▾ 实用功能" Click="OnToggleUtilGroup" />
+            <ListBox x:Name="UtilNav" SelectedIndex="-1" Margin="0,2,0,8" SelectionChanged="OnNavSelectionChanged">
+              <ListBoxItem Padding="26,6"><TextBlock Text="模块专区" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="断点续传" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="文件传输" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="脱机修补" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="应用管理" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="安卓通用" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="Payload" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="备份助手" FontSize="12.5" /></ListBoxItem>
+            </ListBox>
 
-            <Button Grid.Column="2" Classes="subtle" Padding="8,3" Margin="0,0,6,0"
-                    Command="{Binding ClearLogCommand}" ToolTip.Tip="清空输出日志">
-              <TextBlock Text="清空" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
-            </Button>
+            <!-- 刷机资源 group (collapsed by default like upstream) -->
+            <Button x:Name="ResGroupHeader" Classes="groupHeader" Content="▸ 刷机资源" Click="OnToggleResGroup" />
+            <ListBox x:Name="ResNav" SelectedIndex="-1" Margin="0,2,0,4" SelectionChanged="OnNavSelectionChanged" IsVisible="False">
+              <ListBoxItem Padding="26,6"><TextBlock Text="Rom专区" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="镜像下载" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="26,6"><TextBlock Text="联想查包" FontSize="12.5" /></ListBoxItem>
+            </ListBox>
 
-            <Button Grid.Column="3" Classes="subtle" Padding="8,3"
-                    Command="{Binding ToggleLogCommand}" ToolTip.Tip="折叠/展开日志抽屉">
-              <TextBlock Text="{Binding LogToggleText}"
-                         FontSize="11" Foreground="{DynamicResource VioletLightBrush}" />
-            </Button>
-          </Grid>
+            <ListBox x:Name="AboutNav" SelectedIndex="-1" Margin="0,8,0,0" SelectionChanged="OnNavSelectionChanged">
+              <ListBoxItem Padding="10,7"><TextBlock Text="ℹ 关于" FontSize="13" /></ListBoxItem>
+            </ListBox>
 
-          <!-- Terminal Output Box (Collapsible) -->
-          <TextBox Grid.Row="1" Text="{Binding LogText}" IsReadOnly="True" TextWrapping="NoWrap"
-                   AcceptsReturn="True" Background="#0A0812" BorderBrush="#1C182E" BorderThickness="1"
-                   CornerRadius="6" Padding="10,8"
-                   FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, Cascadia Code, monospace" FontSize="11.5"
-                   Foreground="#C4B5FD"
-                   IsVisible="{Binding IsLogExpanded}" Height="120" />
-        </Grid>
+          </StackPanel>
+        </ScrollViewer>
       </Border>
 
+      <!-- Page content -->
+      <ScrollViewer Grid.Column="1" Margin="14,12,14,8">
+        <ContentControl Content="{Binding CurrentPage}" HorizontalContentAlignment="Stretch" />
+      </ScrollViewer>
     </Grid>
 
+    <!-- ===== Footer status bar (upstream layout) ===== -->
+    <Border Grid.Row="2" Background="#FFFFFF" BorderBrush="{DynamicResource BorderMutedBrush}"
+            BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Margin="10,0,10,0">
+        <Border Grid.Column="0" Background="#F3EAFD" CornerRadius="4" Padding="7,2" Margin="0,0,8,0" VerticalAlignment="Center">
+          <TextBlock Text="V3.7-Linux" FontSize="10.5" FontWeight="Bold" Foreground="#8A63E8" />
+        </Border>
+        <TextBlock Grid.Column="1" Text="🌐 EN" FontSize="10.5" Foreground="#8D88A0"
+                   Margin="0,0,12,0" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="{Binding DeviceSummary}" FontSize="10.5"
+                   Foreground="#4C82F0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        <TextBlock Grid.Column="3" Text="GitHub 开源 · 点 Star 支持" FontSize="10.5"
+                   Foreground="#8A63E8" VerticalAlignment="Center" Margin="0,0,12,0" />
+        <Button Grid.Column="4" Classes="footerLink" Content="终端" Click="OnOpenTerminal" />
+        <Button Grid.Column="5" Classes="footerLink" Content="工具自检" Click="OnToolsCheck" />
+      </Grid>
+    </Border>
   </Grid>
+
+  <Window.Styles>
+    <Style Selector="Button.titleBtn">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="14,5" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector="Button.titleBtn:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#9C77EE" />
+    </Style>
+    <Style Selector="Button.groupHeader">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#5C5670" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+    <Style Selector="Button.footerLink">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="#5C5670" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="8,2" />
+      <Setter Property="FontSize" Value="10.5" />
+      <Setter Property="Margin" Value="0,0,8,0" />
+    </Style>
+    <Style Selector="Button.footerLink:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#F0EFF6" />
+    </Style>
+    <!-- upstream: selected nav row = light gray + blue left strip -->
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource RowSelectedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StripBrush}" />
+      <Setter Property="BorderThickness" Value="3,0,0,0" />
+    </Style>
+    <Style Selector="ListBoxItem">
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Margin" Value="0,1" />
+    </Style>
+  </Window.Styles>
 </Window>

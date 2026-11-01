@@ -18,9 +18,26 @@ public sealed class DevicePageViewModel : ViewModelBase
     private readonly FastbootService _fastboot = new();
 
     private AdbDevice? _selectedAdbDevice;
-    private string _deviceInfo = "点击「刷新」检测设备。";
+    private string _deviceInfo = "";
     private string _adbSummary = "ADB：—";
     private string _fastbootSummary = "Fastboot：—";
+
+    // Upstream 主页: two-column field card, every field individually bound.
+    private string _deviceStatus = "未连接";
+    private string _connectionType = "等待设备连接...";
+    private string _serial = "--";
+    private string _model = "--";
+    private string _deviceCode = "--";
+    private string _androidVersion = "--";
+    private string _unlockState = "--";
+    private string _versionInfo = "--";
+    private string _kernelVersion = "--";
+    private string _buildDate = "--";
+    private string _slotSuffix = "--";
+    private string _cpuVendor = "--";
+    private string _socName = "--";
+    private string _osName = "--";
+    private string _selinuxState = "--";
 
     public DevicePageViewModel()
     {
@@ -44,6 +61,21 @@ public sealed class DevicePageViewModel : ViewModelBase
     }
 
     public string DeviceInfo { get => _deviceInfo; set => SetProperty(ref _deviceInfo, value); }
+    public string DeviceStatus { get => _deviceStatus; set => SetProperty(ref _deviceStatus, value); }
+    public string ConnectionType { get => _connectionType; set => SetProperty(ref _connectionType, value); }
+    public string Serial { get => _serial; set => SetProperty(ref _serial, value); }
+    public string Model { get => _model; set => SetProperty(ref _model, value); }
+    public string DeviceCode { get => _deviceCode; set => SetProperty(ref _deviceCode, value); }
+    public string AndroidVersion { get => _androidVersion; set => SetProperty(ref _androidVersion, value); }
+    public string UnlockState { get => _unlockState; set => SetProperty(ref _unlockState, value); }
+    public string VersionInfo { get => _versionInfo; set => SetProperty(ref _versionInfo, value); }
+    public string KernelVersion { get => _kernelVersion; set => SetProperty(ref _kernelVersion, value); }
+    public string BuildDate { get => _buildDate; set => SetProperty(ref _buildDate, value); }
+    public string SlotSuffix { get => _slotSuffix; set => SetProperty(ref _slotSuffix, value); }
+    public string CpuVendor { get => _cpuVendor; set => SetProperty(ref _cpuVendor, value); }
+    public string SocName { get => _socName; set => SetProperty(ref _socName, value); }
+    public string OsName { get => _osName; set => SetProperty(ref _osName, value); }
+    public string SelinuxState { get => _selinuxState; set => SetProperty(ref _selinuxState, value); }
     public string AdbSummary { get => _adbSummary; set => SetProperty(ref _adbSummary, value); }
     public string FastbootSummary { get => _fastbootSummary; set => SetProperty(ref _fastbootSummary, value); }
 
@@ -96,18 +128,56 @@ public sealed class DevicePageViewModel : ViewModelBase
         try
         {
             var props = await _adb.GetPropsAsync(device.Serial).ConfigureAwait(true);
-            string Get(string key) => props.TryGetValue(key, out var v) ? v : "—";
-            DeviceInfo =
-                $"序列号：{device.Serial}\n" +
-                $"型号：{Get("ro.product.model")}（{Get("ro.product.brand")}）\n" +
-                $"Android：{Get("ro.build.version.release")}（{Get("ro.build.version.incremental")}）\n" +
-                $"ColorOS/系统：{Get("ro.build.version.oplusrom.release")} {Get("ro.build.date")}\n" +
-                $"当前槽位：{Get("ro.boot.slot_suffix")}\n" +
-                $"已解锁：{Get("ro.boot.verifiedbootstate")} / {Get("sys.oem_unlock_allowed")}";
+            string Get(params string[] keys) =>
+                keys.FirstOrDefault(k => props.TryGetValue(k, out var v) && !string.IsNullOrEmpty(v)) is { } hit
+                    ? props[hit] : "--";
+            string GetOr(params string[] keys) => Get(keys) == "--" ? "" : Get(keys);
+
+            DeviceStatus = "已连接";
+            ConnectionType = "ADB (开机模式)";
+            Serial = device.Serial;
+            Model = Get("ro.product.model");
+            DeviceCode = Get("ro.product.device");
+            AndroidVersion = Get("ro.build.version.release");
+            UnlockState = props.TryGetValue("ro.boot.unlocked", out var unl)
+                ? (unl == "1" ? "已解锁" : "未解锁")
+                : props.TryGetValue("ro.boot.flash.locked", out var locked) ? (locked == "0" ? "已解锁" : "未解锁") : "--";
+            VersionInfo = Get("ro.build.version.incremental");
+            KernelVersion = "--";
+            BuildDate = Get("ro.build.date");
+            SlotSuffix = Get("ro.boot.slot_suffix", "ro.boot.slot");
+            CpuVendor = "--";
+            SocName = "--";
+            OsName = Get("ro.build.version.oplusrom.release", "ro.build.display.id");
+            SelinuxState = "--";
+
+            // Kernel / CPU / SELinux need shell reads; fetch in one pass.
+            try
+            {
+                var extra = await _adb.ShellAsync(device.Serial,
+                    "uname -r; echo ---; getenforce; echo ---; head -n 12 /proc/cpuinfo").ConfigureAwait(true);
+                var parts = extra.Split("---");
+                if (parts.Length > 0) KernelVersion = parts[0].Trim();
+                if (parts.Length > 1) SelinuxState = parts[1].Trim() switch
+                {
+                    "Enforcing" => "Enforcing (严格)",
+                    "Permissive" => "Permissive (宽容)",
+                    var v => string.IsNullOrEmpty(v) ? "--" : v,
+                };
+                if (parts.Length > 2)
+                {
+                    var cpu = parts[2];
+                    CpuVendor = cpu.Contains("MediaTek") ? "联发科" : cpu.Contains("Qualcomm") ? "高通" : "--";
+                    var soc = System.Text.RegularExpressions.Regex.Match(cpu, @"(SM\d+|MT\d+)");
+                    if (soc.Success) SocName = soc.Value;
+                }
+            }
+            catch { /* best-effort extras */ }
         }
         catch (Exception ex)
         {
-            DeviceInfo = $"读取设备信息失败：{ex.Message}";
+            DeviceStatus = "读取失败";
+            _deviceInfo = $"读取设备信息失败：{ex.Message}";
         }
     }
 

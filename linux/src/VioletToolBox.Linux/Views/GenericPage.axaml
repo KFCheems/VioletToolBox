@@ -11,7 +11,7 @@
       </StackPanel>
     </Grid>
 
-    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+    <Border Classes="panel" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="10">
         <TextBlock Text="卡刷转线刷（zip → 解包 + payload 展开 + flash 脚本）" FontWeight="Medium" />
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
@@ -19,11 +19,11 @@
           <Button Grid.Column="1" Content="浏览…" Command="{Binding PickZipCommand}" />
         </Grid>
         <TextBox Text="{Binding OutputDir}" PlaceholderText="输出目录（留空=zip 同名目录）" />
-        <Button Classes="violet" Content="转换" Command="{Binding ConvertCommand}" HorizontalAlignment="Left" />
+        <Button Classes="primary" Content="转换" Command="{Binding ConvertCommand}" HorizontalAlignment="Left" />
       </StackPanel>
     </Border>
 
-    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+    <Border Classes="panel" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="10">
         <TextBlock Text="其他工具" FontWeight="Medium" />
         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
@@ -41,7 +41,7 @@
           <Button Grid.Column="1" Content="连接" Command="{Binding WirelessConnectCommand}" />
         </Grid>
         <Button Content="修复 ADB（重启 adb server）" Command="{Binding FixAdbCommand}" HorizontalAlignment="Left" />
-        <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#5C5670" TextWrapping="Wrap" />
       </StackPanel>
     </Border>
   </StackPanel>

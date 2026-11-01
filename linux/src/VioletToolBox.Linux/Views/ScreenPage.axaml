@@ -3,34 +3,134 @@
              xmlns:vm="using:VioletToolBox.Linux.ViewModels"
              x:Class="VioletToolBox.Linux.Views.ScreenPage"
              x:DataType="vm:ScreenPageViewModel">
-  <StackPanel>
-    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
-      <StackPanel Grid.Column="0" Spacing="2">
-        <TextBlock Text="实时投屏 · scrcpy 镜像" Classes="h1" Margin="0" />
-        <TextBlock Text="基于系统 scrcpy 的低延迟设备镜像投屏，支持画质与交互细节调节" Classes="muted" />
-      </StackPanel>
-    </Grid>
-    <Border Classes="card" MaxWidth="760" HorizontalAlignment="Left">
-      <StackPanel Spacing="10">
-        <TextBlock Text="{Binding Availability}" Foreground="#B7AFCE" FontSize="12.5" />
-        <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*" ColumnSpacing="8">
-          <TextBlock Grid.Column="0" Text="清晰度上限" VerticalAlignment="Center" />
-          <ComboBox Grid.Column="1" ItemsSource="{Binding SizeOptions}" SelectedItem="{Binding MaxSize}" />
-          <TextBlock Grid.Column="2" Text="码率 (Mbps)" VerticalAlignment="Center" />
-          <NumericUpDown Grid.Column="3" Value="{Binding Bitrate}" Minimum="1" Maximum="50" Increment="1" />
-          <TextBlock Grid.Column="4" Text="帧率上限" VerticalAlignment="Center" />
-          <ComboBox Grid.Column="5" ItemsSource="{Binding FpsOptions}" SelectedItem="{Binding MaxFps}" />
-        </Grid>
-        <StackPanel Orientation="Horizontal" Spacing="16">
-          <CheckBox Content="息屏投屏" IsChecked="{Binding TurnScreenOff}" />
-          <CheckBox Content="保持唤醒" IsChecked="{Binding StayAwake}" />
-          <CheckBox Content="显示触控" IsChecked="{Binding ShowTouches}" />
+
+  <Grid ColumnDefinitions="1*,1*" ColumnSpacing="12">
+
+    <!-- Left column (upstream layout) -->
+    <StackPanel Grid.Column="0" Spacing="12">
+
+      <Border Classes="panel">
+        <StackPanel Spacing="8">
+          <TextBlock Text="屏幕操作" Classes="h2" Margin="0" />
+          <WrapPanel>
+            <Button Content="强制竖屏" Margin="0,0,8,8" />
+            <Button Content="强制横屏" Margin="0,0,8,8" />
+            <Button Content="自动旋转" Margin="0,0,8,8" />
+            <Button Content="截屏" Margin="0,0,8,8" />
+          </WrapPanel>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Classes="violet" Content="开始投屏" Command="{Binding StartCommand}" />
-          <Button Content="停止" Command="{Binding StopCommand}" />
+      </Border>
+
+      <Border Classes="panel">
+        <StackPanel Spacing="8">
+          <TextBlock Text="按键模拟" Classes="h2" Margin="0" />
+          <WrapPanel>
+            <Button Content="返回键" Margin="0,0,8,8" Command="{Binding KeyCommand}" CommandParameter="back" />
+            <Button Content="主页键" Margin="0,0,8,8" Command="{Binding KeyCommand}" CommandParameter="home" />
+            <Button Content="多任务" Margin="0,0,8,8" Command="{Binding KeyCommand}" CommandParameter="recents" />
+            <Button Content="锁屏" Margin="0,0,8,8" Command="{Binding KeyCommand}" CommandParameter="power" />
+          </WrapPanel>
         </StackPanel>
-      </StackPanel>
-    </Border>
-  </StackPanel>
+      </Border>
+
+      <Border Classes="panel">
+        <StackPanel Spacing="8">
+          <TextBlock Text="音量调节" Classes="h2" Margin="0" />
+          <WrapPanel>
+            <Button Content="音量+" Margin="0,0,8,8" Command="{Binding KeyCommand}" CommandParameter="volumeup" />
+            <Button Content="音量-" Margin="0,0,8,8" Command="{Binding KeyCommand}" CommandParameter="volumedown" />
+            <Button Content="静音" Margin="0,0,8,8" Command="{Binding KeyCommand}" CommandParameter="mute" />
+          </WrapPanel>
+          <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,4,0,0">
+            <Button Classes="primary" Content="开始投屏" Command="{Binding StartCommand}" />
+            <Button Classes="dangerSolid" Content="结束投屏" Command="{Binding StopCommand}" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="14">
+            <CheckBox Content="全自动投屏" />
+            <CheckBox Content="虚拟按键" IsChecked="True" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="panel">
+        <StackPanel Spacing="8">
+          <TextBlock Text="扩展选项" Classes="h2" Margin="0" />
+          <WrapPanel>
+            <CheckBox Content="同步剪切板" IsChecked="True" Margin="0,0,14,6" />
+            <CheckBox Content="屏幕常亮" IsChecked="{Binding StayAwake}" Margin="0,0,14,6" />
+            <CheckBox Content="窗口置顶" Margin="0,0,14,6" />
+            <CheckBox Content="全屏启动" Margin="0,0,14,6" />
+          </WrapPanel>
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="角度:" VerticalAlignment="Center" FontSize="12.5" />
+            <RadioButton GroupName="angle" Content="原始角度" IsChecked="True" />
+            <RadioButton GroupName="angle" Content="90°" />
+            <RadioButton GroupName="angle" Content="180°" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="窗口大小:" VerticalAlignment="Center" FontSize="12.5" />
+            <RadioButton GroupName="winsize" Content="90%" IsChecked="True" />
+            <RadioButton GroupName="winsize" Content="80%" />
+            <RadioButton GroupName="winsize" Content="70%" />
+            <RadioButton GroupName="winsize" Content="60%" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+
+    <!-- Right column -->
+    <StackPanel Grid.Column="1" Spacing="12">
+
+      <Border Classes="panel">
+        <StackPanel Spacing="10">
+          <TextBlock Text="投屏参数调节" Classes="h2" Margin="0" />
+          <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+            <TextBlock Grid.Column="0" Text="屏幕清晰度" VerticalAlignment="Center" FontSize="12.5" />
+            <Slider Grid.Column="1" Minimum="1" Maximum="16" Value="{Binding Bitrate}" />
+            <TextBlock Grid.Column="2" Text="{Binding Bitrate}" Foreground="{DynamicResource PrimaryBrush}"
+                       FontWeight="Bold" MinWidth="24" />
+          </Grid>
+          <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+            <TextBlock Grid.Column="0" Text="投屏帧率" VerticalAlignment="Center" FontSize="12.5" />
+            <Slider Grid.Column="1" Minimum="15" Maximum="120" Value="{Binding MaxFps}" />
+            <TextBlock Grid.Column="2" Text="{Binding MaxFps}" Foreground="{DynamicResource PrimaryBrush}"
+                       FontWeight="Bold" MinWidth="24" />
+          </Grid>
+          <StackPanel Orientation="Horizontal" Spacing="14">
+            <CheckBox Content="息屏投屏" IsChecked="{Binding TurnScreenOff}" />
+            <CheckBox Content="显示触控" IsChecked="{Binding ShowTouches}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="panel">
+        <StackPanel Spacing="8">
+          <TextBlock Text="投屏标题调节" Classes="h2" Margin="0" />
+          <WrapPanel>
+            <CheckBox Content="设备名称" IsChecked="True" Margin="0,0,14,6" />
+            <CheckBox Content="启动槽位" IsChecked="True" Margin="0,0,14,6" />
+            <CheckBox Content="安卓版本" IsChecked="True" Margin="0,0,14,6" />
+            <CheckBox Content="设备序列号" IsChecked="True" Margin="0,0,14,6" />
+            <CheckBox Content="设备代号" Margin="0,0,14,6" />
+            <CheckBox Content="版本信息" Margin="0,0,14,6" />
+            <CheckBox Content="解锁状态" Margin="0,0,14,6" />
+            <CheckBox Content="电量" Margin="0,0,14,6" />
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="panel" MinHeight="180">
+        <StackPanel Spacing="8">
+          <TextBlock Text="投屏日志" Classes="h2" Margin="0" />
+          <TextBox Text="{Binding Log}" IsReadOnly="True" AcceptsReturn="True"
+                   PlaceholderText="投屏实时输出..." Background="#FAFAFD" BorderThickness="0"
+                   MinHeight="140" FontSize="12" Foreground="#44405A"
+                   FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, monospace" />
+          <TextBlock Text="{Binding Availability}" Classes="muted" />
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </Grid>
 </UserControl>

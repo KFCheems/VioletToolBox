@@ -11,6 +11,7 @@ public sealed class ScreenPageViewModel : ViewModelBase
 {
     private readonly ScrcpyService _scrcpy = new();
     private readonly Action<string> _log;
+    private string _logText = "";
 
     private int _maxSize = 1600;
     private int _bitrate = 8;
@@ -24,6 +25,7 @@ public sealed class ScreenPageViewModel : ViewModelBase
     {
         _log = log;
         StartCommand = new AsyncCommand(StartAsync);
+        KeyCommand = new ParameterCommand(key => _ = SendKeyAsync(key));
         StopCommand = new RelayCommand(() =>
         {
             if (_current is { HasExited: false } p)
@@ -36,6 +38,7 @@ public sealed class ScreenPageViewModel : ViewModelBase
 
     public AsyncCommand StartCommand { get; }
     public RelayCommand StopCommand { get; }
+    public ParameterCommand KeyCommand { get; }
 
     public ObservableCollection<int> SizeOptions { get; } = [0, 800, 1200, 1600, 1920, 2560];
     public ObservableCollection<int> FpsOptions { get; } = [0, 30, 60, 90, 120];
@@ -47,9 +50,31 @@ public sealed class ScreenPageViewModel : ViewModelBase
     public bool StayAwake { get => _stayAwake; set => SetProperty(ref _stayAwake, value); }
     public bool ShowTouches { get => _showTouches; set => SetProperty(ref _showTouches, value); }
 
+    public string Log { get => _logText; set => SetProperty(ref _logText, value); }
+
     public string Availability => _scrcpy.IsAvailable
         ? "✓ scrcpy 已就绪（投屏窗口为独立进程）"
         : "✗ 未安装 scrcpy，请执行：sudo dnf install scrcpy";
+
+    private async Task SendKeyAsync(string? key)
+    {
+        try
+        {
+            var device = await new AdbService().FirstOnlineDeviceAsync().ConfigureAwait(true)
+                ?? throw new InvalidOperationException("未检测到 ADB 设备");
+            var adb = new AdbService();
+            var code = key switch
+            {
+                "back" => "4", "home" => "3", "recents" => "187", "power" => "26",
+                "volumeup" => "24", "volumedown" => "25", "mute" => "164",
+                _ => "",
+            };
+            if (string.IsNullOrEmpty(code)) return;
+            var output = await adb.ShellAsync(device.Serial, $"input keyevent {code}").ConfigureAwait(true);
+            Log += $"[keyevent {code} ({key})] ok\n";
+        }
+        catch (Exception ex) { Log += $"按键失败: {ex.Message}\n"; }
+    }
 
     private async Task StartAsync()
     {
