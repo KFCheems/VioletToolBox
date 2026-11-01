@@ -3,4 +3,7 @@
     <Project Path="src/VioletToolBox.Core/VioletToolBox.Core.csproj" />
     <Project Path="src/VioletToolBox.Linux/VioletToolBox.Linux.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VioletToolBox.ConsistencyTests/VioletToolBox.ConsistencyTests.csproj" />
+  </Folder>
 </Solution>

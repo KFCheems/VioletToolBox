@@ -106,4 +106,12 @@ public sealed class FastbootService
         return ProcessRunner.RunAsync(fb, $"-s {serial} fetch {partition} \"{outputPath}\"",
             timeout: TimeSpan.FromMinutes(30), ct: ct);
     }
+
+    /// <summary>Raw fastboot command passthrough (logical-partition management etc.).</summary>
+    public Task<ProcessResult> RunAsync(string serial, string command,
+        TimeSpan? timeout = null, CancellationToken ct = default)
+    {
+        var fb = RequireFastboot();
+        return ProcessRunner.RunAsync(fb, $"-s {serial} {command}", timeout: timeout, ct: ct);
+    }
 }

@@ -16,6 +16,13 @@ public sealed record ProcessResult(int ExitCode, string StdOut, string StdErr, b
 /// </summary>
 public static class ProcessRunner
 {
+    /// <summary>
+    /// Test seam: when non-null, all launches are routed here instead of spawning real
+    /// processes. The consistency suite uses this to record command sequences and
+    /// script device responses without hardware.
+    /// </summary>
+    public static Func<string, string, Task<ProcessResult>>? Intercept { get; set; }
+
     public static ProcessStartInfo MakeStartInfo(string exe, string args, string? workDir = null)
     {
         var psi = new ProcessStartInfo
@@ -37,6 +44,11 @@ public static class ProcessRunner
         string exe, string args, string? workDir = null,
         TimeSpan? timeout = null, CancellationToken ct = default)
     {
+        if (Intercept is not null)
+        {
+            var intercepted = await Intercept(exe, args).ConfigureAwait(false);
+            return intercepted;
+        }
         var psi = MakeStartInfo(exe, args, workDir);
         return await RunAsync(psi, timeout, ct).ConfigureAwait(false);
     }
@@ -44,6 +56,12 @@ public static class ProcessRunner
     public static async Task<ProcessResult> RunAsync(
         ProcessStartInfo psi, TimeSpan? timeout = null, CancellationToken ct = default)
     {
+        if (Intercept is not null)
+        {
+            var intercepted = await Intercept(psi.FileName, psi.Arguments).ConfigureAwait(false);
+            return intercepted;
+        }
+
         using var process = new Process { StartInfo = psi };
         var stdout = new StringBuilder();
         var stderr = new StringBuilder();

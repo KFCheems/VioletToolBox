@@ -60,7 +60,9 @@ public sealed class AdbService
     {
         if (!await HasRootAsync(serial, ct).ConfigureAwait(false))
             throw new InvalidOperationException("设备无 root（su）权限，无法执行该操作。");
-        return await ShellAsync(serial, $"su -c {Quote(command)}", timeout, ct).ConfigureAwait(false);
+        // Upstream wraps su payloads in single quotes: shell "su -c 'cmd'".
+        var escaped = command.Replace("'", "'\\''");
+        return await ShellAsync(serial, $"su -c '{escaped}'", timeout, ct).ConfigureAwait(false);
     }
 
     public async Task<bool> HasRootAsync(string serial, CancellationToken ct = default)

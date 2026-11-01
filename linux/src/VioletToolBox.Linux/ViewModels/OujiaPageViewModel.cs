@@ -23,6 +23,8 @@ public sealed class OujiaPageViewModel : ViewModelBase
     private string _status = "选择解包后的全量包目录（或售后包 XML 脚本）。";
     private string _xiaomiDir = string.Empty;
     private string _xiaomiScript = "flash_all.sh";
+    private bool _clearData;
+    private bool _autoReboot = true;
 
     public OujiaPageViewModel(Action<string> log, IFilePickers pickers)
     {
@@ -85,6 +87,12 @@ public sealed class OujiaPageViewModel : ViewModelBase
     public string XiaomiDir { get => _xiaomiDir; set => SetProperty(ref _xiaomiDir, value); }
     public string XiaomiScript { get => _xiaomiScript; set => SetProperty(ref _xiaomiScript, value); }
 
+    /// <summary>上游「清除数据」复选框（收尾时 erase userdata/metadata + misc 补丁）。</summary>
+    public bool ClearData { get => _clearData; set => SetProperty(ref _clearData, value); }
+
+    /// <summary>上游「自动重启」复选框（成功收尾后 reboot）。</summary>
+    public bool AutoReboot { get => _autoReboot; set => SetProperty(ref _autoReboot, value); }
+
     private async Task ExtractXiaomiAsync(string archive)
     {
         try
@@ -116,7 +124,10 @@ public sealed class OujiaPageViewModel : ViewModelBase
         _cts = new CancellationTokenSource();
         var progress = new Progress<double>(p => Percent = p);
         Status = $"线刷中（{_modeName}）…";
-        await _engine.RunAsync(fb.Serial, PackageDir, _mode, m => _log(m), progress, _cts.Token).ConfigureAwait(true);
+        // Upstream semantics: FRP erase always runs at the end (in FastbootD); clear-data
+        // and auto-reboot are user checkboxes mirrored from the upstream session context.
+        await _engine.RunAsync(fb.Serial, PackageDir, _mode, m => _log(m), progress,
+            clearData: ClearData, autoReboot: AutoReboot, _cts.Token).ConfigureAwait(true);
         Percent = 100;
         Status = "✓ 完成。";
     }

@@ -27,24 +27,46 @@ public sealed class OujiaFlashService
 {
     private readonly FastbootService _fastboot = new();
 
-    /// <summary>Partition ordering used by the upstream engine (bootloader-ish first, dynamic last).</summary>
-    private static readonly string[] OrderHint =
+    /// <summary>
+    /// Upstream OujiaLogicalPartitionNames (oujiaflash.cs:42-50) — the logical (dynamic)
+    /// partitions that must go through FastbootD create/delete-logical-partition flows.
+    /// </summary>
+    public static readonly string[] LogicalPartitionNames =
     [
-        "vbmeta", "vbmeta_system", "vbmeta_vendor",
-        "abl", "aop", "aop_config", "boot", "init_boot", "vendor_boot", "dtbo",
-        "xbl", "xbl_config", "xbl_ramdump", "tz", "hyp", "devcfg", "keymaster", "qupfw",
-        "uefisecapp", "imagefv", "shrm", "multiimgoem", "modem", "bluetooth", "dsp",
-        "recovery", "misc",
+        "system", "odm", "vendor", "product", "system_ext", "system_dlkm",
+        "vendor_dlkm", "odm_dlkm", "my_bigball", "my_carrier", "my_company",
+        "my_engineering", "my_heytap", "my_manifest", "my_preload",
+        "my_product", "my_region", "my_stock",
     ];
 
-    private static readonly string[] DynamicHint = ["super", "system", "vendor", "product", "odm", "my_region", "my_carrier", "my_bigball", "my_heytap", "my_stock", "my_preload", "my_product", "my_engineering", "my_company", "my_manifest"];
+    /// <summary>Upstream image extensions accepted from a package directory.</summary>
+    private static readonly string[] ImageExtensions = [".img", ".bin", ".raw", ".sparse"];
 
-    /// <summary>Collects partition images from a firmware directory (skips payload.bin and cache files).</summary>
+    /// <summary>UI mode labels ↔ engine modes (upstream: 普通/强力/AB通刷/仅FBD + 售后 FB/FBD).</summary>
+    public static readonly (string Label, OujiaMode Mode)[] ModeTable =
+    [
+        ("普通线刷", OujiaMode.NormalFull),
+        ("强力线刷（修复Super）", OujiaMode.StrongFull),
+        ("AB 通刷", OujiaMode.AbFull),
+        ("仅 FastbootD", OujiaMode.FastbootDOnly),
+        ("修复 FastbootD", OujiaMode.RepairFastbootD),
+        ("售后 FB 模式", OujiaMode.SvcFb),
+        ("售后 FBD 模式", OujiaMode.SvcFbd),
+    ];
+
+    private static bool IsLogicalPartition(string name) => LogicalPartitionNames.Contains(name);
+
+    /// <summary>
+    /// Collects partition images from a firmware directory and orders them by FILE SIZE
+    /// ascending — the upstream rule for every mode (no hardcoded partition order).
+    /// Skips payload.bin and GPT dumps; _a/_b suffixes are normalized to the base name
+    /// (upstream: the file suffix only names the source slot, the actual target is
+    /// decided by the flow).
+    /// </summary>
     public IReadOnlyList<(string Partition, string ImagePath)> ScanImages(string directory, bool dynamicOnly = false)
     {
         var files = Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly)
-            .Where(f => f.EndsWith(".img", StringComparison.OrdinalIgnoreCase)
-                     || f.EndsWith(".bin", StringComparison.OrdinalIgnoreCase))
+            .Where(f => ImageExtensions.Any(e => f.EndsWith(e, StringComparison.OrdinalIgnoreCase)))
             .Where(f => !Path.GetFileName(f).Equals("payload.bin", StringComparison.OrdinalIgnoreCase))
             .Where(f => !Path.GetFileName(f).StartsWith("gpt", StringComparison.OrdinalIgnoreCase))
             .ToList();
@@ -52,19 +74,23 @@ public sealed class OujiaFlashService
         var items = new List<(string, string)>();
         foreach (var file in files)
         {
-            var name = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
-            if (dynamicOnly && !DynamicHint.Any(h => h == name) && !name.StartsWith("_"))
+            var name = NormalizePartitionBaseName(Path.GetFileNameWithoutExtension(file));
+            if (dynamicOnly && !IsLogicalPartition(name))
                 continue;
             items.Add((name, file));
         }
 
+        // Upstream: OrderBy(FileInfo.Length) — smallest images first.
         return items
-            .OrderBy(i =>
-            {
-                var idx = Array.FindIndex(OrderHint, h => i.Item1 == h);
-                return idx >= 0 ? idx : 100 + StringComparer.Ordinal.GetHashCode(i.Item1) % 100;
-            })
+            .OrderBy(i => new FileInfo(i.Item2).Length)
             .ToList();
+    }
+
+    /// <summary>Strips a trailing _a/_b slot suffix (upstream NormalizeOujiaPartitionBaseName).</summary>
+    public static string NormalizePartitionBaseName(string partition)
+    {
+        var m = Regex.Match(partition, @"^(?<base>.+)_(?<slot>a|b)$");
+        return m.Success ? m.Groups["base"].Value : partition;
     }
 
     /// <summary>Reads the anti-rollback (ARB) level when the bootloader exposes it.</summary>
@@ -112,9 +138,10 @@ public sealed class OujiaFlashService
         return new OujiaFlashPlan(plan);
     }
 
-    /// <summary>Runs a full flash flow end-to-end.</summary>
+    /// <summary>Runs a full flash flow end-to-end, following the upstream sequence.</summary>
     public async Task RunAsync(string serial, string packageDir, OujiaMode mode,
         Action<string>? log = null, IProgress<double>? progress = null,
+        bool clearData = false, bool autoReboot = true,
         CancellationToken ct = default)
     {
         var device = await _fastboot.DevicesAsync(ct).ConfigureAwait(false);
@@ -123,48 +150,35 @@ public sealed class OujiaFlashService
 
         if (mode is OujiaMode.FastbootDOnly or OujiaMode.SvcFbd or OujiaMode.RepairFastbootD)
         {
-            var isUserspace = await _fastboot.GetVarAsync(serial, "is-userspace", ct).ConfigureAwait(false);
-            if (!isUserspace.Contains("yes", StringComparison.OrdinalIgnoreCase))
-            {
-                log?.Invoke("[欧加] 重启进入 FastbootD…");
-                await _fastboot.RebootAsync(serial, "fastboot", ct).ConfigureAwait(false);
-                await Task.Delay(4000, ct).ConfigureAwait(false);
-                serial = (await _fastboot.DevicesAsync(ct).ConfigureAwait(false)).FirstOrDefault()?.Serial
-                    ?? throw new InvalidOperationException("进入 FastbootD 后未找到设备。");
-            }
+            serial = await EnsureFastbootdAsync(serial, mode == OujiaMode.FastbootDOnly, log, ct).ConfigureAwait(false);
         }
 
         if (mode == OujiaMode.RepairFastbootD)
         {
-            // 修复 FastbootD：重刷引导链后强制进入用户空间。
-            foreach (var p in new[] { "boot", "init_boot", "vendor_boot", "dtbo" })
+            // Upstream repair partition set: bootloader chain, both slots, no erase, no clear-data.
+            foreach (var p in new[] { "boot", "dtbo", "init_boot", "modem", "recovery",
+                                      "vbmeta", "vbmeta_system", "vbmeta_vendor", "vendor_boot" })
             {
                 var img = Path.Combine(packageDir, $"{p}.img");
-                if (File.Exists(img))
-                {
-                    log?.Invoke($"[欧加] flash {p}（修复引导）…");
-                    var r = await _fastboot.FlashAsync(serial, p, img, ct).ConfigureAwait(false);
-                    if (!r.Success) log?.Invoke($"[欧加] ✗ {p}: {r.Combined}");
-                }
+                if (!File.Exists(img)) { log?.Invoke($"[欧加] 警告: 未找到 {p} 镜像文件，跳过"); continue; }
+                log?.Invoke($"[欧加] [Flashing] {p}.img → {p}_a.img");
+                await _fastboot.FlashAsync(serial, $"{p}_a", img, ct).ConfigureAwait(false);
+                await Task.Delay(500, ct).ConfigureAwait(false); // upstream: 500ms between slots
+                log?.Invoke($"[欧加] [Flashing] {p}.img → {p}_b.img");
+                await _fastboot.FlashAsync(serial, $"{p}_b", img, ct).ConfigureAwait(false);
             }
-            var vbmeta = Path.Combine(packageDir, "vbmeta.img");
-            if (File.Exists(vbmeta))
-            {
-                log?.Invoke("[欧加] flash vbmeta --disable-verity --disable-verification…");
-                var psi = ProcessRunner.MakeStartInfo(_fastboot.FastbootPath!,
-                    $"-s {serial} --disable-verity --disable-verification flash vbmeta \"{vbmeta}\"");
-                await ProcessRunner.RunAsync(psi, timeout: TimeSpan.FromMinutes(3), ct: ct).ConfigureAwait(false);
-            }
+            // Repair ends by entering FastbootD — no clear-data, no FRP, no auto reboot.
+            log?.Invoke("[欧加] reboot fastboot（进入 FastbootD 校验）…");
+            await _fastboot.RebootAsync(serial, "fastboot", ct).ConfigureAwait(false);
+            log?.Invoke("[欧加] ✓ 修复流程完成。");
+            return;
         }
 
-        if (mode is OujiaMode.StrongFull or OujiaMode.SvcFb or OujiaMode.SvcFbd)
+        if (mode == OujiaMode.StrongFull)
         {
-            foreach (var p in new[] { "userdata", "metadata", "frp" })
-            {
-                log?.Invoke($"[欧加] erase {p}…");
-                var r = await _fastboot.EraseAsync(serial, p, ct).ConfigureAwait(false);
-                if (!r.Success) log?.Invoke($"[欧加] （{p} 不支持擦除，跳过）");
-            }
+            // Upstream Force mode: NO erases — rebuild super via logical-partition surgery on slot a.
+            log?.Invoke("[欧加] 强力线刷：重构 super（delete/create-logical-partition）…");
+            await RebuildSuperAsync(serial, "a", createSize: 40, log, ct).ConfigureAwait(false);
         }
 
         var plan = await BuildPlanAsync(serial, packageDir, mode, log, ct).ConfigureAwait(false);
@@ -180,9 +194,29 @@ public sealed class OujiaFlashService
             progress?.Report(done * 100.0 / plan.Items.Count);
         }
 
-        if (mode is OujiaMode.NormalFull or OujiaMode.StrongFull or OujiaMode.AbFull)
+        // Upstream post-flash actions (ExecuteOujiaPostFlashActionsAsync):
+        // ensure FastbootD → erase frp → optional clear-data (userdata → metadata →
+        // QC-only -w → misc) → optional reboot.
+        log?.Invoke("[欧加] 收尾：进入 FastbootD 擦除 FRP…");
+        serial = await EnsureFastbootdAsync(serial, requireExisting: false, log, ct).ConfigureAwait(false);
+        var frp = await _fastboot.EraseAsync(serial, "frp", ct).ConfigureAwait(false);
+        if (!frp.Success) log?.Invoke("[欧加] ⚠ 擦除FRP失败");
+
+        if (clearData)
         {
-            // Auto-reboot when the complete flow succeeded, matching upstream 自动重启.
+            log?.Invoke("[欧加] 清除数据：erase userdata → erase metadata…");
+            await _fastboot.EraseAsync(serial, "userdata", ct).ConfigureAwait(false);
+            await _fastboot.EraseAsync(serial, "metadata", ct).ConfigureAwait(false);
+            var misc = Path.Combine(AppContext.BaseDirectory, "tmp", "misc.img");
+            if (File.Exists(misc))
+            {
+                log?.Invoke("[欧加] flash misc（清除数据补丁镜像）…");
+                await _fastboot.FlashAsync(serial, "misc", misc, ct).ConfigureAwait(false);
+            }
+        }
+
+        if (autoReboot)
+        {
             await _fastboot.RebootAsync(serial, "", ct).ConfigureAwait(false);
             log?.Invoke("[欧加] ✓ 全部完成，设备重启中。");
         }
@@ -190,6 +224,53 @@ public sealed class OujiaFlashService
         {
             log?.Invoke("[欧加] ✓ 本阶段完成（未自动重启）。");
         }
+        progress?.Report(100);
+    }
+
+    /// <summary>
+    /// Upstream force-mode super rebuild: delete every logical partition on both slots
+    /// (tolerating "not found"), then create the target-slot partitions with the given
+    /// size hint (force/仅FBD use 40, AB uses 0).
+    /// </summary>
+    private async Task RebuildSuperAsync(string serial, string targetSlot, int createSize,
+        Action<string>? log, CancellationToken ct)
+    {
+        foreach (var name in LogicalPartitionNames)
+        {
+            foreach (var slot in new[] { "a", "b" })
+            {
+                var r = await _fastboot.RunAsync(serial, $"delete-logical-partition {name}_{slot}",
+                    timeout: TimeSpan.FromSeconds(30), ct: ct).ConfigureAwait(false);
+                if (r.Success) log?.Invoke($"[欧加] delete-logical-partition {name}_{slot}");
+            }
+            var create = await _fastboot.RunAsync(serial, $"create-logical-partition {name}_{targetSlot} {createSize}",
+                timeout: TimeSpan.FromSeconds(30), ct: ct).ConfigureAwait(false);
+            if (!create.Success) log?.Invoke($"[欧加] ⚠ create-logical-partition {name}_{targetSlot} 失败");
+        }
+        log?.Invoke("[欧加] 修复Super 完成。");
+    }
+
+    /// <summary>Upstream FastbootD gate: must already be in FastbootD when required; otherwise reboot fastboot.</summary>
+    private async Task<string> EnsureFastbootdAsync(string serial, bool requireExisting,
+        Action<string>? log, CancellationToken ct)
+    {
+        var isUserspace = await _fastboot.GetVarAsync(serial, "is-userspace", ct).ConfigureAwait(false);
+        var inFastbootd = isUserspace.Contains("yes", StringComparison.OrdinalIgnoreCase)
+                       || isUserspace.Contains("true", StringComparison.OrdinalIgnoreCase)
+                       || isUserspace.Equals("1", StringComparison.OrdinalIgnoreCase);
+        if (inFastbootd) return serial;
+
+        if (requireExisting)
+        {
+            log?.Invoke("[欧加] 仅FastbootD线刷要求设备已进入FastbootD模式。");
+            throw new InvalidOperationException("仅FastbootD线刷要求设备已进入 FastbootD 模式。");
+        }
+
+        log?.Invoke("[欧加] reboot fastboot（进入 FastbootD）…");
+        await _fastboot.RebootAsync(serial, "fastboot", ct).ConfigureAwait(false);
+        await Task.Delay(4000, ct).ConfigureAwait(false);
+        return (await _fastboot.DevicesAsync(ct).ConfigureAwait(false)).FirstOrDefault()?.Serial
+            ?? throw new InvalidOperationException("进入 FastbootD 后未找到设备。");
     }
 
     /// <summary>售后包 XML 散表刷写：解析可视刷写生成的 XML 脚本并按表执行。</summary>

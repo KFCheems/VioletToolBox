@@ -138,22 +138,86 @@ public sealed class ModuleService
     public Task InstallApkAsync(string serial, string apkPath, CancellationToken ct = default)
         => new AppManagementService().InstallApkAsync(serial, apkPath, ct);
 
-    /// <summary>Installs a module zip on-device through the manager CLI (needs root).</summary>
+    /// <summary>
+    /// Detects the installed root manager, upstream probe order:
+    /// /data/adb/ksud (KernelSU/SukiSU) → /data/adb/apd (APatch) → /data/adb/magisk.db (Magisk).
+    /// Returns "ksud" | "apd" | "magisk" | null.
+    /// </summary>
+    public async Task<string?> DetectManagerAsync(string serial, CancellationToken ct = default)
+    {
+        foreach (var (marker, manager) in new[]
+                 {
+                     ("ls /data/adb/ksud 2>/dev/null", "ksud"),
+                     ("ls /data/adb/apd 2>/dev/null", "apd"),
+                     ("ls /data/adb/magisk.db 2>/dev/null", "magisk"),
+                 })
+        {
+            var output = await _adb.SuShellAsync(serial, marker, timeout: TimeSpan.FromSeconds(15), ct: ct)
+                .ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(output))
+                return manager;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Installs a module zip on-device. Upstream sequence:
+    /// push → su -c '&lt;manager CLI&gt; &lt;path&gt;' → rm; success when the output contains
+    /// success/done/installed/安装成功/inflating:/extracting/created:/creating:.
+    /// Magisk additionally retries with `su -s` when the first attempt fails.
+    /// </summary>
     public async Task<string> InstallModuleZipAsync(string serial, string moduleZipPath,
         Action<string>? log = null, CancellationToken ct = default)
     {
-        var remote = "/data/local/tmp/vtb_module.zip";
+        // Upstream order: detect the manager first, then push the zip.
+        var manager = await DetectManagerAsync(serial, ct).ConfigureAwait(false)
+            ?? throw new InvalidOperationException("未检测到 root 管理器（ksud / apd / magisk 均不存在）。");
+
+        var remote = $"/data/local/tmp/{Path.GetFileName(moduleZipPath)}";
         var push = await ProcessRunner.RunAsync(_adb.AdbPath ?? "adb", $"-s {serial} push \"{moduleZipPath}\" {remote}",
             ct: ct).ConfigureAwait(false);
         if (!push.Success) throw new IOException($"模块推送失败：{push.Combined}");
 
-        // KernelSU ksud first, Magisk CLI as fallback — mirrors upstream's SukiSU/KSU preference.
-        var output = await _adb.SuShellAsync(serial,
-            "ksud module install /data/local/tmp/vtb_module.zip || magisk --install-module /data/local/tmp/vtb_module.zip",
-            timeout: TimeSpan.FromMinutes(3), ct: ct).ConfigureAwait(false);
-        await _adb.ShellAsync(serial, $"rm -f {remote}", ct: ct).ConfigureAwait(false);
+        var installCommand = manager switch
+        {
+            "ksud" => $"ksud module install {remote}",
+            "apd" => $"apd module install {remote}",
+            _ => $"magisk --install-module {remote}",
+        };
+
+        var output = await _adb.SuShellAsync(serial, installCommand, timeout: TimeSpan.FromMinutes(3), ct: ct)
+            .ConfigureAwait(false);
         log?.Invoke(output);
+
+        // Upstream Magisk fallback: retry via `su -s` when the first attempt shows no success marker.
+        if (manager == "magisk" && !LooksLikeModuleSuccess(output))
+        {
+            log?.Invoke("[模块] Magisk 首次安装未确认，按上游回退 su -s 重试…");
+            output = await _adb.ShellAsync(serial, $"su -s '{installCommand}'",
+                timeout: TimeSpan.FromMinutes(3), ct: ct).ConfigureAwait(false);
+            log?.Invoke(output);
+        }
+
+        await _adb.SuShellAsync(serial, $"rm {remote}", ct: ct).ConfigureAwait(false);
         return output;
+    }
+
+    /// <summary>Upstream success markers for module installs (IsModuleInstallSuccessful).</summary>
+    public static bool LooksLikeModuleSuccess(string output)
+    {
+        var lowered = output.ToLowerInvariant();
+        return lowered.Contains("success") || lowered.Contains("done") || lowered.Contains("installed")
+            || lowered.Contains("安装成功") || lowered.Contains("inflating:") || lowered.Contains("extracting")
+            || lowered.Contains("created:") || lowered.Contains("creating:");
+    }
+
+    /// <summary>Upstream failure markers for su -c shell commands (IsHiddenRootShellCommandFailure).</summary>
+    public static bool LooksLikeShellFailure(string output)
+    {
+        var lowered = output.ToLowerInvariant();
+        return lowered.Contains("permission denied") || lowered.Contains("not found")
+            || lowered.Contains("no such file") || lowered.Contains("invalid")
+            || lowered.Contains("failed") || lowered.Contains("error:");
     }
 
     /// <summary>Hidden-environment helpers (隐藏ROOT): denylist / umount tricks, device-side.</summary>

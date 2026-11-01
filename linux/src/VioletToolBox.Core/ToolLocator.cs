@@ -17,6 +17,12 @@ public static class ToolLocator
         "heimdall", "mke2fs", "e2fsdroid", "simg2img", "append2simg"
     ];
 
+    /// <summary>
+    /// Test seam: when set, overrides every resolution with this function.
+    /// The consistency suite points adb/fastboot/… at recorded stubs.
+    /// </summary>
+    public static Func<string, string?>? ResolverOverride { get; set; }
+
     /// <summary>Directories probed for bundled tools, most specific first.</summary>
     public static IReadOnlyList<string> SearchRoots()
     {
@@ -39,6 +45,9 @@ public static class ToolLocator
     /// <summary>Finds a tool; returns null when absent. Never throws.</summary>
     public static string? Find(string name)
     {
+        if (ResolverOverride is not null)
+            return ResolverOverride(name);
+
         foreach (var root in SearchRoots())
         {
             foreach (var candidate in new[]
