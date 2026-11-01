@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             xmlns:core="using:VioletToolBox.Core.Android"
+             x:Class="VioletToolBox.Linux.Views.DevicePage"
+             x:DataType="vm:DevicePageViewModel">
+
+  <StackPanel Spacing="0">
+
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+      <TextBlock Grid.Column="0" Text="设备" Classes="h1" />
+      <Button Grid.Column="1" Classes="violet" Content="刷新" Command="{Binding RefreshCommand}" />
+    </Grid>
+
+    <Grid ColumnDefinitions="1*,1*" ColumnSpacing="12">
+
+      <!-- Left: device lists + actions -->
+      <StackPanel Grid.Column="0" Spacing="12">
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="{Binding AdbSummary}" FontWeight="Medium" />
+            <ListBox ItemsSource="{Binding AdbDevices}" SelectedItem="{Binding SelectedAdbDevice}" MaxHeight="130">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="core:AdbDevice">
+                  <TextBlock>
+                    <Run Text="{Binding DisplayName}" /><Run Text="  " /><Run Text="{Binding State}" Foreground="#9A93AC" />
+                  </TextBlock>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Text="{Binding FastbootSummary}" FontWeight="Medium" />
+            <ListBox ItemsSource="{Binding FastbootDevices}" MaxHeight="90">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="core:FastbootDevice">
+                  <TextBlock><Run Text="{Binding Serial}" /><Run Text="  " /><Run Text="{Binding State}" Foreground="#9A93AC" /></TextBlock>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </StackPanel>
+        </Border>
+
+        <Border Classes="card">
+          <StackPanel Spacing="10">
+            <TextBlock Text="重启与槽位" FontWeight="Medium" />
+            <WrapPanel Orientation="Horizontal">
+              <Button Content="重启系统" Margin="0,0,8,8" Command="{Binding RebootCommand}" CommandParameter="" />
+              <Button Content="Recovery" Margin="0,0,8,8" Command="{Binding RebootCommand}" CommandParameter="recovery" />
+              <Button Content="Bootloader" Margin="0,0,8,8" Command="{Binding RebootCommand}" CommandParameter="bootloader" />
+              <Button Content="FastbootD" Margin="0,0,8,8" Command="{Binding RebootCommand}" CommandParameter="fastbootd" />
+              <Button Content="Sideload" Margin="0,0,8,8" Command="{Binding RebootCommand}" CommandParameter="sideload" />
+              <Button Content="EDL (9008)" Margin="0,0,8,8" Command="{Binding RebootCommand}" CommandParameter="edl" />
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal">
+              <Button Classes="violet" Content="切到槽位 A" Margin="0,0,8,8" Command="{Binding SetSlotCommand}" CommandParameter="a" />
+              <Button Classes="violet" Content="切到槽位 B" Margin="0,0,8,8" Command="{Binding SetSlotCommand}" CommandParameter="b" />
+            </WrapPanel>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <!-- Right: device info + tool availability -->
+      <StackPanel Grid.Column="1" Spacing="12">
+        <Border Classes="card">
+          <StackPanel Spacing="6">
+            <TextBlock Text="设备信息" FontWeight="Medium" />
+            <TextBox Text="{Binding DeviceInfo}" IsReadOnly="True" AcceptsReturn="True"
+                     Background="Transparent" BorderThickness="0" MinHeight="150"
+                     TextWrapping="Wrap" FontSize="12.5" Foreground="#D6D0E4" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card">
+          <StackPanel Spacing="6">
+            <TextBlock Text="环境检查（工具可用性）" FontWeight="Medium" />
+            <ItemsControl ItemsSource="{Binding Tools}" MaxHeight="180">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:ToolStatus">
+                  <TextBlock FontSize="12" Margin="0,2">
+                    <Run Text="{Binding Name, Mode=OneWay}" FontWeight="Medium" /><Run Text="   " />
+                    <Run Text="{Binding Display, Mode=OneWay}" Foreground="#B7AFCE" />
+                  </TextBlock>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Grid>
+  </StackPanel>
+</UserControl>

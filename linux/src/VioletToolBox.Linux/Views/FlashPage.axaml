@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.FlashPage"
+             x:DataType="vm:FlashPageViewModel">
+
+  <StackPanel>
+    <TextBlock Text="基本刷入" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+      <StackPanel Spacing="12">
+        <TextBlock Text="镜像来源" FontWeight="Medium" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding ImagePath}" PlaceholderText="选择 boot.img / init_boot.img 等镜像文件路径" />
+          <Button Grid.Column="1" Content="浏览…" Command="{Binding BrowseCommand}" />
+        </Grid>
+
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+          <TextBlock Grid.Column="0" Text="分区" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding PartitionOptions}"
+                    SelectedItem="{Binding SelectedPartition}" MinWidth="180" HorizontalAlignment="Left" />
+          <TextBox Grid.Column="2" Text="{Binding CustomPartition}" PlaceholderText="自定义分区名" MinWidth="160" />
+        </Grid>
+
+        <CheckBox Content="vbmeta 附加 --disable-verity --disable-verification"
+                  IsChecked="{Binding DisableVerity}" />
+
+        <WrapPanel Orientation="Horizontal">
+          <Button Classes="violet" Content="刷入" Margin="0,0,8,8" Command="{Binding FlashCommand}" />
+          <Button Content="擦除分区（仅 Fastboot）" Margin="0,0,8,8" Command="{Binding EraseCommand}" />
+        </WrapPanel>
+
+        <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+      </StackPanel>
+    </Border>
+
+    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+      <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="12">
+        说明：检测到 Fastboot 设备时优先使用 fastboot flash；否则使用 ADB + root dd 写入（需要设备已 root）。
+        刷写 boot/init_boot 等关键分区前请确认镜像与设备匹配，错刷可导致无法开机。
+      </TextBlock>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.PartitionPage"
+             x:DataType="vm:PartitionPageViewModel">
+
+  <StackPanel>
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+      <TextBlock Grid.Column="0" Text="可视刷写（分区读取 / 写入）" Classes="h1" />
+      <Button Grid.Column="1" Classes="violet" Content="刷新分区表" Command="{Binding RefreshCommand}" />
+    </Grid>
+
+    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="14">
+          <TextBlock Text="模式" VerticalAlignment="Center" />
+          <RadioButton GroupName="pmode" Content="ADB（root dd）" IsChecked="{Binding IsAdbMode}" />
+          <RadioButton GroupName="pmode" Content="Fastboot" IsChecked="{Binding IsFastbootMode}" />
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*,130" ColumnSpacing="10" MinHeight="320" MinWidth="760">
+          <ListBox Grid.Column="0" ItemsSource="{Binding Partitions}" SelectedItem="{Binding Selected}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:PartitionRowViewModel">
+                <Grid ColumnDefinitions="*,110,90">
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Medium" />
+                  <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="#B7AFCE" />
+                  <TextBlock Grid.Column="2" Text="{Binding Source}" Foreground="{DynamicResource MutedBrush}" FontSize="11" />
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <StackPanel Grid.Column="1" Spacing="8">
+            <Button Classes="violet" Content="读取到文件…" Command="{Binding ReadCommand}" />
+            <Button Content="写入镜像…" Command="{Binding WriteCommand}" />
+            <TextBlock Text="ADB 读取需要 root（su）。Fastboot 模式读取依赖 fastboot fetch（fastbootd）。"
+                       TextWrapping="Wrap" Classes="muted" />
+          </StackPanel>
+        </Grid>
+
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+        <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.DownloadPage"
+             x:DataType="vm:DownloadPageViewModel">
+
+  <StackPanel>
+    <TextBlock Text="固件下载" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <TextBox Text="{Binding Url}" PlaceholderText="ROM / OTA / 降级包直链（支持多连接）" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding SaveDir}" PlaceholderText="保存目录" />
+          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickDirCommand}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto,110" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding FileName}" PlaceholderText="文件名（留空自动取 URL 文件名）" />
+          <TextBlock Grid.Column="1" Text="连接数" VerticalAlignment="Center" HorizontalAlignment="Right" />
+          <NumericUpDown Grid.Column="2" Value="{Binding SplitCount}" Minimum="1" Maximum="32" Increment="1" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Classes="violet" Content="开始下载" Command="{Binding StartCommand}" />
+          <Button Content="取消" Command="{Binding CancelCommand}" />
+        </StackPanel>
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#B7AFCE" />
+          <TextBlock Text="{Binding Speed}" FontSize="12" Classes="muted" />
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
+      <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="12">
+        提示：下载「降级包」时可直接粘贴官方 OTA 链接；下载完成后的全量包可在「解包」页进行 payload / OFP 处理。
+      </TextBlock>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             xmlns:payload="using:VioletToolBox.Core.Payload"
+             x:Class="VioletToolBox.Linux.Views.ExtractionPage"
+             x:DataType="vm:ExtractionPageViewModel">
+
+  <StackPanel>
+    <TextBlock Text="解包与镜像工具" Classes="h1" />
+
+    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <TextBlock Text="来源与输出" FontWeight="Medium" />
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+          <TextBox Grid.Column="0" Text="{Binding PayloadSource}"
+                   PlaceholderText="payload.bin / zip / .ofp / .ops / 分段super目录 / URL" />
+          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickSourceCommand}" />
+          <Button Grid.Column="2" Content="仅目录…" Command="{Binding PickOutputCommand}" />
+        </Grid>
+        <TextBox Text="{Binding OutputDir}" PlaceholderText="输出目录" />
+      </StackPanel>
+    </Border>
+
+    <Grid ColumnDefinitions="1*,360" ColumnSpacing="12" MaxWidth="980" HorizontalAlignment="Left">
+
+      <Border Grid.Column="0" Classes="card">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top" Spacing="10">
+            <TextBlock Text="payload.bin（支持 zip 与 URL 流式解包）" FontWeight="Medium" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Classes="violet" Content="解析清单" Command="{Binding AnalyzeCommand}" />
+              <Button Content="解出所选分区" Command="{Binding DumpAllCommand}" />
+            </StackPanel>
+          </StackPanel>
+          <ListBox DockPanel.Dock="Bottom" ItemsSource="{Binding PayloadPartitions}" MinHeight="240" Margin="0,10,0,0">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="payload:PartitionItem">
+                <CheckBox IsChecked="{Binding IsSelected}">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="{Binding Name}" FontWeight="Medium" />
+                    <TextBlock Text="{Binding SizeReadable}" Foreground="{DynamicResource MutedBrush}" FontSize="11"
+                               VerticalAlignment="Center" />
+                  </StackPanel>
+                </CheckBox>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+      </Border>
+
+      <StackPanel Grid.Column="1" Spacing="12">
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <TextBlock Text="欧加固件" FontWeight="Medium" />
+            <Button Classes="violet" Content="提取 .ofp（ColorOS 线刷包）" Command="{Binding ExtractOfpCommand}" HorizontalAlignment="Stretch" />
+            <Button Classes="violet" Content="提取 .ops（一加售后包）" Command="{Binding ExtractOpsCommand}" HorizontalAlignment="Stretch" />
+            <Button Content="合并分段 super → super.img" Command="{Binding MergeSuperCommand}" HorizontalAlignment="Stretch" />
+            <Button Content="制作 super.img（lpmake）" Command="{Binding MakeSuperCommand}" HorizontalAlignment="Stretch" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card">
+          <StackPanel Spacing="8">
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Grid>
+  </StackPanel>
+</UserControl>

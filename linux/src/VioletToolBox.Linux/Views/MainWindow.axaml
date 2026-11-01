@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+        xmlns:v="using:VioletToolBox.Linux.Views"
+        x:Class="VioletToolBox.Linux.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="紫罗兰工具箱 · Linux"
+        Width="1180" Height="780"
+        MinWidth="960" MinHeight="640"
+        Background="#12101A"
+        Icon="avares://VioletToolBox/Assets/logo2.ico">
+
+  <Window.DataTemplates>
+    <DataTemplate DataType="vm:DevicePageViewModel"><v:DevicePage /></DataTemplate>
+    <DataTemplate DataType="vm:FlashPageViewModel"><v:FlashPage /></DataTemplate>
+    <DataTemplate DataType="vm:PartitionPageViewModel"><v:PartitionPage /></DataTemplate>
+    <DataTemplate DataType="vm:ExtractionPageViewModel"><v:ExtractionPage /></DataTemplate>
+    <DataTemplate DataType="vm:EdlPageViewModel"><v:EdlPage /></DataTemplate>
+    <DataTemplate DataType="vm:DownloadPageViewModel"><v:DownloadPage /></DataTemplate>
+  </Window.DataTemplates>
+
+  <Grid ColumnDefinitions="200,*,0">
+
+    <!-- Sidebar -->
+    <Border Grid.Column="0" Background="{DynamicResource SideBarBrush}">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="16,20,16,18" Spacing="2">
+          <TextBlock Text="紫罗兰工具箱" FontSize="19" FontWeight="Bold" Foreground="#C4B5FD" />
+          <TextBlock Text="Linux 移植版" FontSize="12" Foreground="{DynamicResource MutedBrush}" />
+        </StackPanel>
+
+        <ListBox x:Name="NavList" ItemsSource="{Binding NavItems}"
+                 SelectedIndex="0" Background="Transparent"
+                 SelectionChanged="OnNavSelectionChanged">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:NavItem">
+              <StackPanel Orientation="Horizontal" Spacing="10" Margin="4,2">
+                <TextBlock Text="{Binding Glyph}" FontSize="15" Foreground="#A78BFA" />
+                <TextBlock Text="{Binding Title}" FontSize="14" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- Page content + log -->
+    <Grid Grid.Column="1" RowDefinitions="*,Auto" Margin="18,14,18,10">
+      <ScrollViewer Grid.Row="0">
+        <ContentControl Content="{Binding CurrentPage}" HorizontalContentAlignment="Stretch" />
+      </ScrollViewer>
+
+      <Border Grid.Row="1" Background="{DynamicResource LogBrush}" CornerRadius="8"
+              Padding="10,6" Margin="0,8,0,0" Height="118">
+        <Grid RowDefinitions="Auto,*">
+          <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+            <TextBlock Grid.Column="0" Text="输出日志" FontSize="11"
+                       Foreground="{DynamicResource MutedBrush}" Margin="0,0,8,4" />
+            <TextBlock Grid.Column="2" Text="{Binding DeviceSummary}" FontSize="11"
+                       Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,4" />
+          </Grid>
+          <TextBox Grid.Row="1" Text="{Binding LogText}" IsReadOnly="True" TextWrapping="NoWrap"
+                   AcceptsReturn="False" Background="Transparent" BorderThickness="0"
+                   FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, monospace" FontSize="11"
+                   Foreground="#B7AFCE" />
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=紫罗兰工具箱 Linux
+GenericName=Android Flash Toolbox
+Comment=面向 Android 设备开发的多功能搞机工具箱（Linux 移植版）
+Exec=/opt/violettoolbox/VioletToolBox
+Icon=violettoolbox
+Terminal=false
+Categories=Development;Utility;
+Keywords=android;adb;fastboot;edl;刷机;线刷;9008;
+StartupWMClass=VioletToolBox

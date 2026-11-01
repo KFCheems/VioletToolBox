@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VioletToolBox.Core/VioletToolBox.Core.csproj" />
+    <Project Path="src/VioletToolBox.Linux/VioletToolBox.Linux.csproj" />
+  </Folder>
+</Solution>

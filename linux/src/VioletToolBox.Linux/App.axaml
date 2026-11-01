@@ -1,0 +1,49 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="VioletToolBox.Linux.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+          <Color x:Key="VioletAccentColor">#8B5CF6</Color>
+          <Color x:Key="VioletDeepColor">#7C3AED</Color>
+          <SolidColorBrush x:Key="VioletAccentBrush" Color="{StaticResource VioletAccentColor}" />
+          <SolidColorBrush x:Key="VioletDeepBrush" Color="{StaticResource VioletDeepColor}" />
+          <SolidColorBrush x:Key="SideBarBrush" Color="#17141F" />
+          <SolidColorBrush x:Key="CardBrush" Color="#201C2B" />
+          <SolidColorBrush x:Key="LogBrush" Color="#141219" />
+          <SolidColorBrush x:Key="MutedBrush" Color="#9A93AC" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <Style Selector="Button.violet">
+      <Setter Property="Background" Value="{DynamicResource VioletDeepBrush}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    <Style Selector="Button.violet:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource VioletAccentBrush}" />
+    </Style>
+    <Style Selector="TextBlock.h1">
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="16" />
+      <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+  </Application.Styles>
+</Application>

@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:VioletToolBox.Linux.ViewModels"
+             x:Class="VioletToolBox.Linux.Views.EdlPage"
+             x:DataType="vm:EdlPageViewModel">
+
+  <StackPanel>
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+      <TextBlock Grid.Column="0" Text="EDL 刷写（高通 9008）" Classes="h1" />
+      <Button Grid.Column="1" Content="刷新串口" Command="{Binding RefreshPortsCommand}" />
+    </Grid>
+
+    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
+      <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="Auto,160,Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
+          <TextBlock Grid.Column="0" Text="串口" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}" />
+          <Button Grid.Column="2" Content="Programmer…" Command="{Binding PickProgrammerCommand}" />
+          <TextBox Grid.Column="3" Text="{Binding ProgrammerPath}" PlaceholderText="firehose .mbn / .elf 路径" />
+          <Button Grid.Column="4" Classes="violet" Content="连接" Command="{Binding ConnectCommand}" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Button Content="断开" Command="{Binding DisconnectCommand}" />
+          <Button Content="读取分区表" Command="{Binding LoadPartitionsCommand}" />
+          <Button Content="重启系统" Command="{Binding ResetCommand}" CommandParameter="reset" />
+          <Button Content="重启 EDL" Command="{Binding ResetCommand}" CommandParameter="edl" />
+          <Button Content="重启 Fastboot" Command="{Binding ResetCommand}" CommandParameter="fastboot" />
+        </StackPanel>
+        <TextBox Text="{Binding DeviceInfo}" IsReadOnly="True" AcceptsReturn="True" Background="Transparent"
+                 BorderThickness="0" MinHeight="70" TextWrapping="Wrap" FontSize="12.5" Foreground="#D6D0E4" />
+      </StackPanel>
+    </Border>
+
+    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
+      <StackPanel>
+      <Grid ColumnDefinitions="*,150" ColumnSpacing="10" MinHeight="260" MinWidth="760">
+        <ListBox Grid.Column="0" ItemsSource="{Binding Partitions}" SelectedItem="{Binding SelectedPartition}">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:EdlPartitionRowViewModel">
+              <Grid ColumnDefinitions="*,120,50">
+                <TextBlock Grid.Column="0" Text="{Binding Label}" FontWeight="Medium" />
+                <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="#B7AFCE" />
+                <TextBlock Grid.Column="2" Text="{Binding Lun, StringFormat=LUN {0}}" Foreground="{DynamicResource MutedBrush}" FontSize="11" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Column="1" Spacing="8">
+          <Button Classes="violet" Content="读取分区…" Command="{Binding ReadCommand}" />
+          <Button Content="写入镜像…" Command="{Binding WriteCommand}" />
+          <Button Content="擦除分区" Command="{Binding EraseCommand}" />
+          <TextBlock Text="需要对应机型的 firehose programmer。"
+                     TextWrapping="Wrap" Classes="muted" />
+        </StackPanel>
+      </Grid>
+      <StackPanel Spacing="6" Margin="0,10,0,0">
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
+        <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+      </StackPanel>
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>13</LangVersion>
+    <AssemblyName>VioletToolBox.Core</AssemblyName>
+    <RootNamespace>VioletToolBox.Core</RootNamespace>
+    <Description>VioletToolBox cross-platform core (Linux port)</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.25.3" />
+    <PackageReference Include="Grpc.Tools" Version="2.66.0" PrivateAssets="All" />
+    <PackageReference Include="SharpCompress" Version="0.37.0" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.8.1" />
+    <PackageReference Include="SharpEDL" Version="1.0.4" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.8" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Payload\update_metadata.proto" GrpcServices="None" />
+  </ItemGroup>
+
+</Project>
