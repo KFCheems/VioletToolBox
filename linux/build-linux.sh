@@ -17,6 +17,10 @@ echo "==> dotnet publish (linux-x64, $MODE)"
 dotnet publish src/VioletToolBox.Linux/VioletToolBox.Linux.csproj \
     -c Release -r linux-x64 $MODE -o "$OUT/VioletToolBox"
 
+echo "==> dotnet publish vtb CLI (AI-native entrypoint)"
+dotnet publish src/VioletToolBox.Cli/VioletToolBox.Cli.csproj \
+    -c Release -r linux-x64 $MODE -o "$OUT/vtb"
+
 APPDIR="$OUT/AppDir/VioletToolBox.AppDir"
 echo "==> assembling AppDir"
 mkdir -p "$APPDIR/bin" "$APPDIR/share/icons/hicolor/256x256/apps" "$APPDIR/share/applications"

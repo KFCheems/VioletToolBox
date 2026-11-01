@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>13</LangVersion>
+    <AssemblyName>VioletToolBox.Agent</AssemblyName>
+    <RootNamespace>VioletToolBox.Agent</RootNamespace>
+    <Description>AI-native command surface for VioletToolBox (CLI registry, NL router, MCP server)</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VioletToolBox.Core\VioletToolBox.Core.csproj" />
+  </ItemGroup>
+
+</Project>

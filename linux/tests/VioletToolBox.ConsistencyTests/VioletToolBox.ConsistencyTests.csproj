@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\VioletToolBox.Core\VioletToolBox.Core.csproj" />
+    <ProjectReference Include="..\..\src\VioletToolBox.Agent\VioletToolBox.Agent.csproj" />
   </ItemGroup>
 
 </Project>

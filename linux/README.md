@@ -19,6 +19,23 @@ cd linux
 ./dist/VioletToolBox/VioletToolBox --page EDL   # 直达页面（支持全部 16 页名称）
 ```
 
+## AI 原生接口（AI native）
+
+除 GUI 外，本移植版提供三层 AI 代理可直接驱动的接口（详见 [docs/ai-native.md](docs/ai-native.md)）：
+
+```bash
+vtb --list                          # 17 个命令 + 参数 schema（JSON）
+vtb device.info                     # JSON envelope: { ok, command, data, error, log }
+vtb flash.partition --partition boot --image boot.img
+vtb --mcp                           # MCP 服务器（JSON-RPC/stdio，AI 助手原生工具）
+vtb "检测设备"                       # 自然语言路由（确定性匹配，不确定绝不执行）
+```
+
+- **CLI**：shell 可组合、退出码契约（0/1/2/3）、stdout 纯 JSON
+- **MCP**：Claude Desktop / ZCode 等可直接注册 `vtb --mcp` 为工具服务器
+- **NL 路由**：中文意图 → 命令；危险操作显式标记，缺参数返回候选而非猜测执行
+- 底层与 GUI 共用同一引擎，行为一致性由 36 项命令级测试保障（[docs/parity.md](docs/parity.md)）
+
 ## 系统依赖
 
 ```bash
