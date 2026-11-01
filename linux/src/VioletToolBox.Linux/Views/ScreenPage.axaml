@@ -4,7 +4,12 @@
              x:Class="VioletToolBox.Linux.Views.ScreenPage"
              x:DataType="vm:ScreenPageViewModel">
   <StackPanel>
-    <TextBlock Text="投屏（scrcpy）" Classes="h1" />
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="实时投屏 · scrcpy 镜像" Classes="h1" Margin="0" />
+        <TextBlock Text="基于系统 scrcpy 的低延迟设备镜像投屏，支持画质与交互细节调节" Classes="muted" />
+      </StackPanel>
+    </Grid>
     <Border Classes="card" MaxWidth="760" HorizontalAlignment="Left">
       <StackPanel Spacing="10">
         <TextBlock Text="{Binding Availability}" Foreground="#B7AFCE" FontSize="12.5" />

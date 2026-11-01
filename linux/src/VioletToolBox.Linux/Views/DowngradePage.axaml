@@ -4,7 +4,12 @@
              x:Class="VioletToolBox.Linux.Views.DowngradePage"
              x:DataType="vm:DowngradePageViewModel">
   <StackPanel>
-    <TextBlock Text="降级助手（OPPO / 一加）" Classes="h1" />
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="降级助手 · ColorOS" Classes="h1" Margin="0" />
+        <TextBlock Text="OPPO / 一加设备 OTA 降级包查询、下载与推送执行" Classes="muted" />
+      </StackPanel>
+    </Grid>
 
     <Border Classes="card" MaxWidth="900" HorizontalAlignment="Left">
       <StackPanel Spacing="10">

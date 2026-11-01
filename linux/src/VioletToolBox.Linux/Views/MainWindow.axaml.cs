@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using VioletToolBox.Linux.ViewModels;
 
@@ -11,9 +12,28 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContextChanged += (_, _) => WirePickers();
         WirePickers();
+
+        // Keyboard accelerators: Ctrl+1..9 jump straight to the corresponding nav page.
+        KeyDown += OnKeyDownAccelerators;
     }
 
     private MainWindowViewModel? Vm => DataContext as MainWindowViewModel;
+
+    private void OnKeyDownAccelerators(object? sender, KeyEventArgs e)
+    {
+        if (Vm is null) return;
+        if (e.KeyModifiers == KeyModifiers.Control
+            && e.Key >= Key.D1 && e.Key <= Key.D9)
+        {
+            var index = (int)(e.Key - Key.D1);
+            if (index < Vm.NavItems.Count)
+            {
+                NavList.SelectedIndex = index;
+                Vm.CurrentPage = Vm.NavItems[index].Page;
+                e.Handled = true;
+            }
+        }
+    }
 
     private void WirePickers()
     {

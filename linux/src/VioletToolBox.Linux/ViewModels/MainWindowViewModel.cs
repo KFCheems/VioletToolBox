@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 
 namespace VioletToolBox.Linux.ViewModels;
 
-public sealed record NavItem(string Title, string Glyph, ViewModelBase Page);
+public sealed record NavItem(string Title, string Glyph, string Category, ViewModelBase Page);
 
 public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
 {
     private ViewModelBase _currentPage;
     private string _logText = $"紫罗兰工具箱 · Linux 移植版（{DateTime.Now:yyyy-MM-dd HH:mm}）\n";
     private string _deviceSummary = "未检测";
+    private bool _isLogExpanded = true;
 
     public MainWindowViewModel()
     {
@@ -34,23 +35,33 @@ public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
 
         NavItems =
         [
-            new NavItem("设备", "⌂", DevicePage),
-            new NavItem("投屏", "▶", ScreenPage),
-            new NavItem("刷入", "⚡", FlashPage),
-            new NavItem("分区", "▤", PartitionPage),
-            new NavItem("欧加线刷", "◈", OujiaPage),
-            new NavItem("EDL", "◉", EdlPage),
-            new NavItem("降级助手", "⇩", DowngradePage),
-            new NavItem("模块专区", "⊕", ModulePage),
-            new NavItem("应用与文件", "☰", AppsPage),
-            new NavItem("脱机修补", "⚒", BootPatchPage),
-            new NavItem("安卓通用", "⚙", GenericPage),
-            new NavItem("解包", "▣", ExtractionPage),
-            new NavItem("备份助手", "🕮", BackupPage),
-            new NavItem("下载专区", "⇓", DownloadCenterPage),
-            new NavItem("下载", "↓", DownloadPage),
-            new NavItem("关于", "ℹ", AboutPage),
+            // 基础操作
+            new NavItem("设备主页", "⌂", "基础与连接", DevicePage),
+            new NavItem("实时投屏", "▶", "基础与连接", ScreenPage),
+            new NavItem("应用文件", "☰", "基础与连接", AppsPage),
+            new NavItem("备份助手", "🕮", "基础与连接", BackupPage),
+
+            // 刷写专区
+            new NavItem("基本刷入", "⚡", "刷机与线刷", FlashPage),
+            new NavItem("可视分区", "▤", "刷机与线刷", PartitionPage),
+            new NavItem("欧加线刷", "◈", "刷机与线刷", OujiaPage),
+            new NavItem("EDL (9008)", "◉", "刷机与线刷", EdlPage),
+
+            // 深度玩机与ROOT
+            new NavItem("模块专区", "⊕", "玩机与修补", ModulePage),
+            new NavItem("脱机修补", "⚒", "玩机与修补", BootPatchPage),
+            new NavItem("安卓通用", "⚙", "玩机与修补", GenericPage),
+            new NavItem("固件解包", "▣", "玩机与修补", ExtractionPage),
+
+            // 固件与下载
+            new NavItem("降级助手", "⇩", "下载与服务", DowngradePage),
+            new NavItem("下载专区", "⇓", "下载与服务", DownloadCenterPage),
+            new NavItem("断点续传", "↓", "下载与服务", DownloadPage),
+            new NavItem("关于箱子", "ℹ", "下载与服务", AboutPage),
         ];
+
+        ToggleLogCommand = new RelayCommand(() => IsLogExpanded = !IsLogExpanded);
+        ClearLogCommand = new RelayCommand(() => LogText = $"[已清空日志 {DateTime.Now:HH:mm:ss}]\n");
 
         var requested = Program.InitialPage;
         _currentPage = string.IsNullOrWhiteSpace(requested)
@@ -59,6 +70,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
                                         || n.Title.StartsWith(requested, StringComparison.OrdinalIgnoreCase))?.Page
               ?? DevicePage;
     }
+
+    public RelayCommand ToggleLogCommand { get; }
+    public RelayCommand ClearLogCommand { get; }
 
     public DevicePageViewModel DevicePage { get; }
     public ScreenPageViewModel ScreenPage { get; }
@@ -97,12 +111,24 @@ public sealed class MainWindowViewModel : ViewModelBase, IFilePickers
         set => SetProperty(ref _deviceSummary, value);
     }
 
+    public bool IsLogExpanded
+    {
+        get => _isLogExpanded;
+        set
+        {
+            if (SetProperty(ref _isLogExpanded, value))
+                Raise(nameof(LogToggleText));
+        }
+    }
+
+    public string LogToggleText => IsLogExpanded ? "▲ 收起日志" : "▼ 展开日志";
+
     public void AppendLog(string message)
     {
         LogText += $"{DateTime.Now:HH:mm:ss}  {message}\n";
     }
 
-    // IFilePickers — implemented by MainWindow setting these delegates on startup.
+    // IFilePickers
     private Func<string, string[], Task<string?>>? _pickOpenFile;
     private Func<string, string, Task<string?>>? _pickSaveFile;
     private Func<string, Task<string?>>? _pickFolder;

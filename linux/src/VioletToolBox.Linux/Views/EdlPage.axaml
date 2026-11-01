@@ -4,64 +4,115 @@
              x:Class="VioletToolBox.Linux.Views.EdlPage"
              x:DataType="vm:EdlPageViewModel">
 
-  <StackPanel>
-    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
-      <TextBlock Grid.Column="0" Text="EDL 刷写（高通 9008）" Classes="h1" />
-      <Button Grid.Column="1" Content="刷新串口" Command="{Binding RefreshPortsCommand}" />
+  <StackPanel Spacing="0">
+
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="EDL 刷写 · 高通 9008 深度救砖" Classes="h1" Margin="0" />
+        <TextBlock Text="基于纯托管 Sahara / Firehose 协议栈（SharpEDL），无需 Windows PE 工具" Classes="muted" />
+      </StackPanel>
+      <Button Grid.Column="1" Content="⟳ 刷新串口列表" Command="{Binding RefreshPortsCommand}"
+              VerticalAlignment="Center" Padding="18,10" />
     </Grid>
 
-    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
-      <StackPanel Spacing="10">
-        <Grid ColumnDefinitions="Auto,160,Auto,*,Auto" ColumnSpacing="8" VerticalAlignment="Center">
-          <TextBlock Grid.Column="0" Text="串口" VerticalAlignment="Center" />
-          <ComboBox Grid.Column="1" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}" />
+    <!-- Session Connect Card -->
+    <Border Classes="card">
+      <StackPanel Spacing="12">
+
+        <Grid ColumnDefinitions="Auto,170,Auto,*,Auto,Auto" ColumnSpacing="10">
+          <TextBlock Grid.Column="0" Text="EDL 串口" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="1" ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}"
+                    PlaceholderText="/dev/ttyUSB*" />
           <Button Grid.Column="2" Content="Programmer…" Command="{Binding PickProgrammerCommand}" />
-          <TextBox Grid.Column="3" Text="{Binding ProgrammerPath}" PlaceholderText="firehose .mbn / .elf 路径" />
-          <Button Grid.Column="4" Classes="violet" Content="连接" Command="{Binding ConnectCommand}" />
+          <TextBox Grid.Column="3" Text="{Binding ProgrammerPath}" PlaceholderText="firehose programmer (.mbn / .elf) 路径" />
+          <Button Grid.Column="4" Classes="violet" Content="🔗 连接设备" Command="{Binding ConnectCommand}" Padding="18,10" />
+          <Button Grid.Column="5" Content="断开" Command="{Binding DisconnectCommand}" />
         </Grid>
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Content="断开" Command="{Binding DisconnectCommand}" />
-          <Button Content="读取分区表" Command="{Binding LoadPartitionsCommand}" />
-          <Button Content="重启系统" Command="{Binding ResetCommand}" CommandParameter="reset" />
-          <Button Content="重启 EDL" Command="{Binding ResetCommand}" CommandParameter="edl" />
-          <Button Content="重启 Fastboot" Command="{Binding ResetCommand}" CommandParameter="fastboot" />
-          <Button Content="备份指纹/GPT" Command="{Binding BackupFingerprintCommand}" />
-          <Button Content="恢复出厂" Command="{Binding FactoryResetCommand}" />
-          <Button Content="清除 FRP" Command="{Binding WipeFrpCommand}" />
-          <Button Content="格式化当前 LUN" Command="{Binding FormatLunCommand}" />
-        </StackPanel>
-        <TextBox Text="{Binding DeviceInfo}" IsReadOnly="True" AcceptsReturn="True" Background="Transparent"
-                 BorderThickness="0" MinHeight="70" TextWrapping="Wrap" FontSize="12.5" Foreground="#D6D0E4" />
+
+        <!-- Ops toolbar -->
+        <WrapPanel Orientation="Horizontal">
+          <Button Content="读取分区表" Margin="0,0,8,8" Command="{Binding LoadPartitionsCommand}" />
+          <Button Content="备份指纹/GPT" Margin="0,0,8,8" Command="{Binding BackupFingerprintCommand}" />
+          <Button Content="清除 FRP" Margin="0,0,8,8" Command="{Binding WipeFrpCommand}" />
+          <Button Content="恢复出厂" Margin="0,0,8,8" Classes="danger" Command="{Binding FactoryResetCommand}" />
+          <Button Content="格式化当前 LUN" Margin="0,0,8,8" Classes="danger" Command="{Binding FormatLunCommand}" />
+          <Separator Width="1" Height="24" Background="{DynamicResource BorderMutedBrush}" Margin="4,0,12,8" />
+          <Button Content="重启系统" Margin="0,0,8,8" Command="{Binding ResetCommand}" CommandParameter="reset" />
+          <Button Content="重启 EDL" Margin="0,0,8,8" Command="{Binding ResetCommand}" CommandParameter="edl" />
+          <Button Content="重启 Fastboot" Margin="0,0,8,8" Command="{Binding ResetCommand}" CommandParameter="fastboot" />
+        </WrapPanel>
+
+        <!-- Device info panel -->
+        <Border Background="#110E1E" CornerRadius="8" Padding="12,10"
+                BorderBrush="{DynamicResource BorderMutedBrush}" BorderThickness="1">
+          <TextBox Text="{Binding DeviceInfo}" IsReadOnly="True" AcceptsReturn="True"
+                   Background="Transparent" BorderThickness="0"
+                   TextWrapping="Wrap" FontSize="12.5" Foreground="#E2DCF5"
+                   FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, monospace" />
+        </Border>
+
       </StackPanel>
     </Border>
 
-    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
-      <StackPanel>
-      <Grid ColumnDefinitions="*,150" ColumnSpacing="10" MinHeight="260" MinWidth="760">
-        <ListBox Grid.Column="0" ItemsSource="{Binding Partitions}" SelectedItem="{Binding SelectedPartition}">
-          <ListBox.ItemTemplate>
-            <DataTemplate x:DataType="vm:EdlPartitionRowViewModel">
-              <Grid ColumnDefinitions="*,120,50">
-                <TextBlock Grid.Column="0" Text="{Binding Label}" FontWeight="Medium" />
-                <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="#B7AFCE" />
-                <TextBlock Grid.Column="2" Text="{Binding Lun, StringFormat=LUN {0}}" Foreground="{DynamicResource MutedBrush}" FontSize="11" />
-              </Grid>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
-        <StackPanel Grid.Column="1" Spacing="8">
-          <Button Classes="violet" Content="读取分区…" Command="{Binding ReadCommand}" />
-          <Button Content="写入镜像…" Command="{Binding WriteCommand}" />
-          <Button Content="擦除分区" Command="{Binding EraseCommand}" />
-          <TextBlock Text="需要对应机型的 firehose programmer。"
-                     TextWrapping="Wrap" Classes="muted" />
+    <!-- Partitions workbench -->
+    <Border Classes="card">
+      <StackPanel Spacing="12">
+
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Grid.Column="0" Text="分区操作工作台" Classes="h2" Margin="0" />
+          <TextBlock Grid.Column="1" Text="需要对应机型 firehose programmer" Classes="muted" />
+        </Grid>
+
+        <!-- Table header -->
+        <Border Background="#181329" CornerRadius="8,8,0,0" Padding="14,8">
+          <Grid ColumnDefinitions="*,120,70">
+            <TextBlock Grid.Column="0" Text="分区标签" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="1" Text="容量" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="2" Text="LUN" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
+          </Grid>
+        </Border>
+
+        <Grid ColumnDefinitions="*,150" ColumnSpacing="12" MinHeight="240">
+          <Border Grid.Column="0" Classes="card-subtle" Padding="4" CornerRadius="0,0,8,8" Margin="0,-10,0,0">
+            <ListBox ItemsSource="{Binding Partitions}" SelectedItem="{Binding SelectedPartition}">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:EdlPartitionRowViewModel">
+                  <Grid ColumnDefinitions="*,120,70">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                      <Ellipse Width="6" Height="6" Fill="#F59E0B" VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding Label}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="{DynamicResource TextBodyBrush}" FontSize="12" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="2" Text="{Binding Lun, StringFormat=LUN {0}}"
+                               Foreground="#C4B5FD" FontSize="11" VerticalAlignment="Center" FontWeight="Bold" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Border>
+
+          <StackPanel Grid.Column="1" Spacing="10">
+            <Button Classes="violet" Content="⬇ 读取分区…" Command="{Binding ReadCommand}"
+                    HorizontalAlignment="Stretch" />
+            <Button Content="⬆ 写入镜像…" Command="{Binding WriteCommand}"
+                    HorizontalAlignment="Stretch" />
+            <Button Classes="danger" Content="⚠ 擦除分区" Command="{Binding EraseCommand}"
+                    HorizontalAlignment="Stretch" />
+          </StackPanel>
+        </Grid>
+
+        <StackPanel Spacing="6" Margin="0,4,0,0">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" Text="{Binding Status}" FontSize="12.5" Foreground="#C4B5FD"
+                       TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}" FontSize="11.5"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+          </Grid>
+          <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" />
         </StackPanel>
-      </Grid>
-      <StackPanel Spacing="6" Margin="0,10,0,0">
-        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
-        <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
-      </StackPanel>
+
       </StackPanel>
     </Border>
+
   </StackPanel>
 </UserControl>

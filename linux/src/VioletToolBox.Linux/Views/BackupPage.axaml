@@ -4,7 +4,12 @@
              x:Class="VioletToolBox.Linux.Views.BackupPage"
              x:DataType="vm:BackupPageViewModel">
   <StackPanel>
-    <TextBlock Text="备份助手" Classes="h1" />
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="备份助手 · 数据守护" Classes="h1" Margin="0" />
+        <TextBlock Text="照片、视频与通讯录的设备到本地安全备份" Classes="muted" />
+      </StackPanel>
+    </Grid>
 
     <Border Classes="card" MaxWidth="760" HorizontalAlignment="Left">
       <StackPanel Spacing="10">

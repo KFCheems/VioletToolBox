@@ -4,7 +4,12 @@
              x:Class="VioletToolBox.Linux.Views.ModulePage"
              x:DataType="vm:ModulePageViewModel">
   <StackPanel>
-    <TextBlock Text="模块专区" Classes="h1" />
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="模块专区 · ROOT 生态" Classes="h1" Margin="0" />
+        <TextBlock Text="管理器快捷安装、模块部署与 ROOT 隐藏环境配置" Classes="muted" />
+      </StackPanel>
+    </Grid>
 
     <Border Classes="card" MaxWidth="820" HorizontalAlignment="Left">
       <StackPanel Spacing="10">

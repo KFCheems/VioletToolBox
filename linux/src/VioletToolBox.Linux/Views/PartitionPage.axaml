@@ -4,43 +4,93 @@
              x:Class="VioletToolBox.Linux.Views.PartitionPage"
              x:DataType="vm:PartitionPageViewModel">
 
-  <StackPanel>
-    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
-      <TextBlock Grid.Column="0" Text="可视刷写（分区读取 / 写入）" Classes="h1" />
-      <Button Grid.Column="1" Classes="violet" Content="刷新分区表" Command="{Binding RefreshCommand}" />
+  <StackPanel Spacing="0">
+
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="可视刷写 · 分区读写工作台" Classes="h1" Margin="0" />
+        <TextBlock Text="可视化读取设备分区表，按分区执行读取到本地 / 写入镜像 / 擦除操作" Classes="muted" />
+      </StackPanel>
+      <Button Grid.Column="1" Classes="violet" Content="⟳ 读取分区表" Command="{Binding RefreshCommand}"
+              VerticalAlignment="Center" Padding="18,10" />
     </Grid>
 
-    <Border Classes="card" MaxWidth="980" HorizontalAlignment="Left">
-      <StackPanel Spacing="10">
-        <StackPanel Orientation="Horizontal" Spacing="14">
-          <TextBlock Text="模式" VerticalAlignment="Center" />
-          <RadioButton GroupName="pmode" Content="ADB（root dd）" IsChecked="{Binding IsAdbMode}" />
-          <RadioButton GroupName="pmode" Content="Fastboot" IsChecked="{Binding IsFastbootMode}" />
-        </StackPanel>
+    <Border Classes="card">
 
-        <Grid ColumnDefinitions="*,130" ColumnSpacing="10" MinHeight="320" MinWidth="760">
-          <ListBox Grid.Column="0" ItemsSource="{Binding Partitions}" SelectedItem="{Binding Selected}">
-            <ListBox.ItemTemplate>
-              <DataTemplate x:DataType="vm:PartitionRowViewModel">
-                <Grid ColumnDefinitions="*,110,90">
-                  <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Medium" />
-                  <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="#B7AFCE" />
-                  <TextBlock Grid.Column="2" Text="{Binding Source}" Foreground="{DynamicResource MutedBrush}" FontSize="11" />
-                </Grid>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-          <StackPanel Grid.Column="1" Spacing="8">
-            <Button Classes="violet" Content="读取到文件…" Command="{Binding ReadCommand}" />
-            <Button Content="写入镜像…" Command="{Binding WriteCommand}" />
-            <TextBlock Text="ADB 读取需要 root（su）。Fastboot 模式读取依赖 fastboot fetch（fastbootd）。"
-                       TextWrapping="Wrap" Classes="muted" />
+      <StackPanel Spacing="14">
+
+        <!-- Mode selector segmented -->
+        <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10" VerticalAlignment="Center">
+          <TextBlock Grid.Column="0" Text="刷写通道" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" />
+          <Border Grid.Column="1" Background="#221C38" CornerRadius="8" Padding="2" BorderBrush="{DynamicResource BorderMutedBrush}">
+            <StackPanel Orientation="Horizontal">
+              <RadioButton GroupName="pmode" Content="ADB Root (dd)" IsChecked="{Binding IsAdbMode}"
+                           Margin="10,7" FontSize="12.5" />
+              <RadioButton GroupName="pmode" Content="Fastboot" IsChecked="{Binding IsFastbootMode}"
+                           Margin="10,7" FontSize="12.5" />
+            </StackPanel>
+          </Border>
+          <TextBlock Grid.Column="3" Text="ADB 读取需设备已 Root；Fastboot 读取依赖 fetch（fastbootd）"
+                     Classes="muted" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        </Grid>
+
+        <!-- Table header -->
+        <Border Background="#181329" CornerRadius="8,8,0,0" Padding="14,8">
+          <Grid ColumnDefinitions="*,110,90">
+            <TextBlock Grid.Column="0" Text="分区名称" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="1" Text="容量" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="2" Text="来源" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
+          </Grid>
+        </Border>
+
+        <!-- Partition list + action rail -->
+        <Grid ColumnDefinitions="*,150" ColumnSpacing="12" MinHeight="340">
+
+          <Border Grid.Column="0" Classes="card-subtle" Padding="4" CornerRadius="0,0,8,8" Margin="0,-10,0,0">
+            <ListBox ItemsSource="{Binding Partitions}" SelectedItem="{Binding Selected}">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:PartitionRowViewModel">
+                  <Grid ColumnDefinitions="*,110,90">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                      <Ellipse Width="6" Height="6" Fill="{DynamicResource VioletPrimaryBrush}" VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="{DynamicResource TextBodyBrush}" FontSize="12" VerticalAlignment="Center" />
+                    <Border Grid.Column="2" Background="#251C42" CornerRadius="4" Padding="6,1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding Source}" Foreground="#C4B5FD" FontSize="10.5" FontWeight="Bold" />
+                    </Border>
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+          </Border>
+
+          <!-- Action rail -->
+          <StackPanel Grid.Column="1" Spacing="10">
+            <Button Classes="violet" Content="⬇ 读取到文件…" Command="{Binding ReadCommand}"
+                    HorizontalAlignment="Stretch" />
+            <Button Content="⬆ 写入镜像…" Command="{Binding WriteCommand}"
+                    HorizontalAlignment="Stretch" />
+            <Border Background="#1D1430" CornerRadius="8" Padding="10" BorderBrush="{DynamicResource BorderMutedBrush}" Margin="0,6,0,0">
+              <TextBlock Text="选中分区后执行对应操作；危险分区（如 xbl/tz）写入前请二次确认镜像来源。"
+                         TextWrapping="Wrap" Classes="muted" FontSize="11" />
+            </Border>
           </StackPanel>
         </Grid>
 
-        <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
-        <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" Foreground="#B7AFCE" FontSize="12.5" />
+        <!-- Progress -->
+        <StackPanel Spacing="6" Margin="0,4,0,0">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" Text="{Binding ProgressText}" FontSize="12.5" Foreground="#C4B5FD"
+                       TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}" FontSize="11.5"
+                       Foreground="{DynamicResource TextMutedBrush}" />
+          </Grid>
+          <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" />
+        </StackPanel>
+
       </StackPanel>
     </Border>
+
   </StackPanel>
 </UserControl>

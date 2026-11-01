@@ -4,7 +4,12 @@
              x:Class="VioletToolBox.Linux.Views.AboutPage"
              x:DataType="vm:AboutPageViewModel">
   <StackPanel>
-    <TextBlock Text="关于" Classes="h1" />
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="关于箱子" Classes="h1" Margin="0" />
+        <TextBlock Text="版本信息、移植说明与系统环境健康检查" Classes="muted" />
+      </StackPanel>
+    </Grid>
     <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="6">
         <TextBlock Text="{Binding AppVersion}" FontSize="15" FontWeight="Medium" Foreground="#C4B5FD" />

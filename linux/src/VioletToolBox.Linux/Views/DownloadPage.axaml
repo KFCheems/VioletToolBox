@@ -5,7 +5,12 @@
              x:DataType="vm:DownloadPageViewModel">
 
   <StackPanel>
-    <TextBlock Text="固件下载" Classes="h1" />
+    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0" Spacing="2">
+        <TextBlock Text="断点续传下载器" Classes="h1" Margin="0" />
+        <TextBlock Text="基于 aria2 的多连接并行下载引擎，支持进度恢复" Classes="muted" />
+      </StackPanel>
+    </Grid>
 
     <Border Classes="card" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="10">
