@@ -17,7 +17,7 @@
         <TextBox Text="{Binding Url}" PlaceholderText="ROM / OTA / 降级包直链（支持多连接）" />
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
           <TextBox Grid.Column="0" Text="{Binding SaveDir}" PlaceholderText="保存目录" />
-          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickDirCommand}" />
+          <Button Grid.Column="1" Content="浏览" Command="{Binding PickDirCommand}" />
         </Grid>
         <Grid ColumnDefinitions="*,Auto,110" ColumnSpacing="8">
           <TextBox Grid.Column="0" Text="{Binding FileName}" PlaceholderText="文件名（留空自动取 URL 文件名）" />
@@ -30,7 +30,7 @@
         </StackPanel>
         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
         <StackPanel Orientation="Horizontal" Spacing="12">
-          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#5C5670" />
+          <TextBlock Text="{Binding Status}" FontSize="13" Foreground="#4E4A5C" />
           <TextBlock Text="{Binding Speed}" FontSize="12" Classes="muted" />
         </StackPanel>
       </StackPanel>

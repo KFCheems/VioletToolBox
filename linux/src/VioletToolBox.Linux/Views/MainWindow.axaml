@@ -34,12 +34,12 @@
     <!-- ===== Title bar (upstream purple) ===== -->
     <Border Grid.Row="0" Background="{DynamicResource TitleBarBrush}">
       <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
-        <TextBlock Grid.Column="0" Text="紫罗兰工具箱" FontSize="13.5" FontWeight="Bold"
+        <TextBlock Grid.Column="0" Text="紫罗兰工具箱" FontSize="13" FontWeight="Medium"
                    Foreground="White" Margin="14,0,0,0" VerticalAlignment="Center" />
-        <TextBlock Grid.Column="1" Text="Linux 移植版" FontSize="11" Foreground="#E4D8FA"
+        <TextBlock Grid.Column="1" Text="Linux 移植版" FontSize="12" Foreground="#FFFFFF"
                    Margin="10,0,0,0" VerticalAlignment="Center" />
-        <Button Grid.Column="3" Classes="titleBtn" Content="—" Click="OnMinimize" />
-        <Button Grid.Column="4" Classes="titleBtn" Content="✕" Click="OnClose" />
+        <Button Grid.Column="3" Classes="titleBtn" Content="最小化" Click="OnMinimize" />
+        <Button Grid.Column="4" Classes="titleBtn" Content="关闭" Click="OnClose" />
       </Grid>
     </Border>
 
@@ -53,47 +53,47 @@
           <StackPanel Margin="6,8,6,8">
 
             <ListBox x:Name="TopNav" SelectedIndex="-1" Margin="0,0,0,4" SelectionChanged="OnNavSelectionChanged">
-              <ListBoxItem Padding="10,7">
-                <TextBlock Text="🏠 主页" FontSize="13" />
+              <ListBoxItem Padding="8,8">
+                <TextBlock Text="主页" FontSize="13" />
               </ListBoxItem>
-              <ListBoxItem Padding="10,7">
-                <TextBlock Text="🖥 投屏" FontSize="13" />
+              <ListBoxItem Padding="8,8">
+                <TextBlock Text="投屏" FontSize="13" />
               </ListBoxItem>
             </ListBox>
 
             <!-- 刷写功能 group -->
             <Button x:Name="FlashGroupHeader" Classes="groupHeader" Content="▾ 刷写功能" Click="OnToggleFlashGroup" />
-            <ListBox x:Name="FlashNav" SelectedIndex="-1" Margin="0,2,0,8" SelectionChanged="OnNavSelectionChanged">
-              <ListBoxItem Padding="26,6"><TextBlock Text="基本刷入" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="可视刷写" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="欧加线刷" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="EDL刷写" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="降级助手" FontSize="12.5" /></ListBoxItem>
+            <ListBox x:Name="FlashNav" SelectedIndex="-1" Margin="0,0,0,8" SelectionChanged="OnNavSelectionChanged">
+              <ListBoxItem Padding="24,8"><TextBlock Text="基本刷入" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="可视刷写" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="欧加线刷" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="EDL刷写" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="降级助手" FontSize="13" /></ListBoxItem>
             </ListBox>
 
             <!-- 实用功能 group -->
             <Button x:Name="UtilGroupHeader" Classes="groupHeader" Content="▾ 实用功能" Click="OnToggleUtilGroup" />
-            <ListBox x:Name="UtilNav" SelectedIndex="-1" Margin="0,2,0,8" SelectionChanged="OnNavSelectionChanged">
-              <ListBoxItem Padding="26,6"><TextBlock Text="模块专区" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="断点续传" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="文件传输" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="脱机修补" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="应用管理" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="安卓通用" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="Payload" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="备份助手" FontSize="12.5" /></ListBoxItem>
+            <ListBox x:Name="UtilNav" SelectedIndex="-1" Margin="0,0,0,8" SelectionChanged="OnNavSelectionChanged">
+              <ListBoxItem Padding="24,8"><TextBlock Text="模块专区" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="断点续传" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="文件传输" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="脱机修补" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="应用管理" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="安卓通用" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="Payload" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="备份助手" FontSize="13" /></ListBoxItem>
             </ListBox>
 
             <!-- 刷机资源 group (collapsed by default like upstream) -->
             <Button x:Name="ResGroupHeader" Classes="groupHeader" Content="▸ 刷机资源" Click="OnToggleResGroup" />
             <ListBox x:Name="ResNav" SelectedIndex="-1" Margin="0,2,0,4" SelectionChanged="OnNavSelectionChanged" IsVisible="False">
-              <ListBoxItem Padding="26,6"><TextBlock Text="Rom专区" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="镜像下载" FontSize="12.5" /></ListBoxItem>
-              <ListBoxItem Padding="26,6"><TextBlock Text="联想查包" FontSize="12.5" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="Rom专区" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="镜像下载" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="24,8"><TextBlock Text="联想查包" FontSize="13" /></ListBoxItem>
             </ListBox>
 
             <ListBox x:Name="AboutNav" SelectedIndex="-1" Margin="0,8,0,0" SelectionChanged="OnNavSelectionChanged">
-              <ListBoxItem Padding="10,7"><TextBlock Text="ℹ 关于" FontSize="13" /></ListBoxItem>
+              <ListBoxItem Padding="8,8"><TextBlock Text="关于" FontSize="13" /></ListBoxItem>
             </ListBox>
 
           </StackPanel>
@@ -110,15 +110,15 @@
     <Border Grid.Row="2" Background="#FFFFFF" BorderBrush="{DynamicResource BorderMutedBrush}"
             BorderThickness="0,1,0,0">
       <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto" Margin="10,0,10,0">
-        <Border Grid.Column="0" Background="#F3EAFD" CornerRadius="4" Padding="7,2" Margin="0,0,8,0" VerticalAlignment="Center">
-          <TextBlock Text="V3.7-Linux" FontSize="10.5" FontWeight="Bold" Foreground="#8A63E8" />
+        <Border Grid.Column="0" Background="#F3EAFD" CornerRadius="4" Padding="8,4" Margin="0,0,8,0" VerticalAlignment="Center">
+          <TextBlock Text="V3.7-Linux" FontSize="12" FontWeight="Medium" Foreground="#3B6FD4" />
         </Border>
-        <TextBlock Grid.Column="1" Text="🌐 EN" FontSize="10.5" Foreground="#8D88A0"
+        <TextBlock Grid.Column="1" Text="EN" FontSize="12" Foreground="#73737B"
                    Margin="0,0,12,0" VerticalAlignment="Center" />
-        <TextBlock Grid.Column="2" Text="{Binding DeviceSummary}" FontSize="10.5"
-                   Foreground="#4C82F0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-        <TextBlock Grid.Column="3" Text="GitHub 开源 · 点 Star 支持" FontSize="10.5"
-                   Foreground="#8A63E8" VerticalAlignment="Center" Margin="0,0,12,0" />
+        <TextBlock Grid.Column="2" Text="{Binding DeviceSummary}" FontSize="12"
+                   Foreground="#3B6FD4" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        <TextBlock Grid.Column="3" Text="GitHub" FontSize="12"
+                   Foreground="#3B6FD4" VerticalAlignment="Center" Margin="0,0,12,0" />
         <Button Grid.Column="4" Classes="footerLink" Content="终端" Click="OnOpenTerminal" />
         <Button Grid.Column="5" Classes="footerLink" Content="工具自检" Click="OnToolsCheck" />
       </Grid>

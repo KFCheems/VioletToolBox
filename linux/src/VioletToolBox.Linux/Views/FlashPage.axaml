@@ -13,14 +13,14 @@
         <StackPanel Spacing="10">
           <TextBlock Text="常规操作刷入" Classes="h2" Margin="0" />
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="分区:" VerticalAlignment="Center" FontSize="12.5" />
+            <TextBlock Text="分区:" VerticalAlignment="Center" FontSize="13" />
             <ComboBox ItemsSource="{Binding PartitionOptions}" SelectedItem="{Binding SelectedPartition}"
                       MinWidth="160" />
             <TextBox Text="{Binding CustomPartition}" PlaceholderText="自定义分区" MinWidth="130" />
           </StackPanel>
           <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
             <TextBox Grid.Column="0" Text="{Binding ImagePath}" PlaceholderText="请选择需要刷入的文件..." />
-            <Button Grid.Column="1" Content="📁 选择" Command="{Binding BrowseCommand}" />
+            <Button Grid.Column="1" Content="选择" Command="{Binding BrowseCommand}" />
             <Button Grid.Column="2" Classes="primary" Content="开始刷入" Command="{Binding FlashCommand}" />
           </Grid>
           <StackPanel Orientation="Horizontal" Spacing="16">
@@ -30,7 +30,7 @@
           </StackPanel>
           <Button Classes="danger" Content="擦除分区" Command="{Binding EraseCommand}"
                   HorizontalAlignment="Left" />
-          <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#5C5670" FontSize="12.5" />
+          <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#4E4A5C" FontSize="13" />
         </StackPanel>
       </Border>
 
@@ -40,7 +40,7 @@
           <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
             <TextBox Grid.Column="0" Text="{Binding XiaomiDir}"
                      PlaceholderText="请选择一个解压好的刷机包文件..." />
-            <Button Grid.Column="1" Content="📁 选择" Command="{Binding PickXiaomiDirCommand}" />
+            <Button Grid.Column="1" Content="选择" Command="{Binding PickXiaomiDirCommand}" />
             <Button Grid.Column="2" Classes="primary" Content="开始线刷" Command="{Binding RunXiaomiCommand}" />
           </Grid>
           <ComboBox ItemsSource="{Binding XiaomiScripts}" SelectedItem="{Binding XiaomiScript}"
@@ -89,12 +89,12 @@
           <TextBlock Text="执行日志" Classes="h2" Margin="0" />
           <TextBox Text="{Binding Log}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
                    Background="#FAFAFD" BorderThickness="0" MinHeight="180" FontSize="12"
-                   Foreground="#44405A"
+                   Foreground="#1B1B26"
                    FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, monospace" />
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
             <TextBlock Grid.Column="0" Text="{Binding SpeedText}" Classes="muted" VerticalAlignment="Center" />
             <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}"
-                       Foreground="{DynamicResource PrimaryBrush}" FontWeight="Bold" />
+                       Foreground="{DynamicResource PrimaryBrush}" FontWeight="Medium" />
           </Grid>
           <ProgressBar Value="{Binding Percent}" />
         </StackPanel>

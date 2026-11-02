@@ -71,12 +71,12 @@
               <StackPanel Grid.Column="0" Spacing="2">
                 <ProgressBar Value="0" />
                 <TextBlock Text="0.00GB/0GB" Classes="muted" HorizontalAlignment="Center" />
-                <TextBlock Text="内部存储" FontSize="11" HorizontalAlignment="Center" />
+                <TextBlock Text="内部存储" FontSize="12" HorizontalAlignment="Center" />
               </StackPanel>
               <StackPanel Grid.Column="1" Spacing="2">
                 <ProgressBar Value="0" />
                 <TextBlock Text="0GB/0GB" Classes="muted" HorizontalAlignment="Center" />
-                <TextBlock Text="运行内存" FontSize="11" HorizontalAlignment="Center" />
+                <TextBlock Text="运行内存" FontSize="12" HorizontalAlignment="Center" />
               </StackPanel>
             </Grid>
           </StackPanel>

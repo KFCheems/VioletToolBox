@@ -12,19 +12,19 @@
     </Grid>
     <Border Classes="panel" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="6">
-        <TextBlock Text="{Binding AppVersion}" FontSize="15" FontWeight="Medium" Foreground="#6A3FCB" />
+        <TextBlock Text="{Binding AppVersion}" FontSize="14" FontWeight="Medium" Foreground="#3B6FD4" />
         <TextBlock Text="{Binding Upstream}" Classes="muted" />
-        <TextBlock Text="{Binding PortNote}" TextWrapping="Wrap" Foreground="#5C5670" FontSize="12.5" />
+        <TextBlock Text="{Binding PortNote}" TextWrapping="Wrap" Foreground="#4E4A5C" FontSize="13" />
         <TextBlock Text="{Binding License}" TextWrapping="Wrap" Classes="muted" />
       </StackPanel>
     </Border>
     <Border Classes="panel" MaxWidth="860" HorizontalAlignment="Left">
       <StackPanel Spacing="4">
-        <TextBlock Text="环境检查" FontWeight="Medium" Margin="0,0,0,6" />
+        <TextBlock Text="环境检查" FontWeight="Medium" Margin="0,0,0,8" />
         <ItemsControl ItemsSource="{Binding Tools}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:ToolStatus">
-              <TextBlock FontSize="12" Margin="0,2" Text="{Binding Display}" Foreground="#5C5670" />
+              <TextBlock FontSize="12" Margin="0,2" Text="{Binding Display}" Foreground="#4E4A5C" />
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>

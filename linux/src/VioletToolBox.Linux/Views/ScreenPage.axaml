@@ -56,19 +56,19 @@
         <StackPanel Spacing="8">
           <TextBlock Text="扩展选项" Classes="h2" Margin="0" />
           <WrapPanel>
-            <CheckBox Content="同步剪切板" IsChecked="True" Margin="0,0,14,6" />
-            <CheckBox Content="屏幕常亮" IsChecked="{Binding StayAwake}" Margin="0,0,14,6" />
-            <CheckBox Content="窗口置顶" Margin="0,0,14,6" />
-            <CheckBox Content="全屏启动" Margin="0,0,14,6" />
+            <CheckBox Content="同步剪切板" IsChecked="True" Margin="0,0,12,8" />
+            <CheckBox Content="屏幕常亮" IsChecked="{Binding StayAwake}" Margin="0,0,12,8" />
+            <CheckBox Content="窗口置顶" Margin="0,0,12,8" />
+            <CheckBox Content="全屏启动" Margin="0,0,12,8" />
           </WrapPanel>
           <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="角度:" VerticalAlignment="Center" FontSize="12.5" />
+            <TextBlock Text="角度:" VerticalAlignment="Center" FontSize="13" />
             <RadioButton GroupName="angle" Content="原始角度" IsChecked="True" />
             <RadioButton GroupName="angle" Content="90°" />
             <RadioButton GroupName="angle" Content="180°" />
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="窗口大小:" VerticalAlignment="Center" FontSize="12.5" />
+            <TextBlock Text="窗口大小:" VerticalAlignment="Center" FontSize="13" />
             <RadioButton GroupName="winsize" Content="90%" IsChecked="True" />
             <RadioButton GroupName="winsize" Content="80%" />
             <RadioButton GroupName="winsize" Content="70%" />
@@ -86,16 +86,16 @@
         <StackPanel Spacing="10">
           <TextBlock Text="投屏参数调节" Classes="h2" Margin="0" />
           <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-            <TextBlock Grid.Column="0" Text="屏幕清晰度" VerticalAlignment="Center" FontSize="12.5" />
+            <TextBlock Grid.Column="0" Text="屏幕清晰度" VerticalAlignment="Center" FontSize="13" />
             <Slider Grid.Column="1" Minimum="1" Maximum="16" Value="{Binding Bitrate}" />
             <TextBlock Grid.Column="2" Text="{Binding Bitrate}" Foreground="{DynamicResource PrimaryBrush}"
-                       FontWeight="Bold" MinWidth="24" />
+                       FontWeight="Medium" MinWidth="24" />
           </Grid>
           <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-            <TextBlock Grid.Column="0" Text="投屏帧率" VerticalAlignment="Center" FontSize="12.5" />
+            <TextBlock Grid.Column="0" Text="投屏帧率" VerticalAlignment="Center" FontSize="13" />
             <Slider Grid.Column="1" Minimum="15" Maximum="120" Value="{Binding MaxFps}" />
             <TextBlock Grid.Column="2" Text="{Binding MaxFps}" Foreground="{DynamicResource PrimaryBrush}"
-                       FontWeight="Bold" MinWidth="24" />
+                       FontWeight="Medium" MinWidth="24" />
           </Grid>
           <StackPanel Orientation="Horizontal" Spacing="14">
             <CheckBox Content="息屏投屏" IsChecked="{Binding TurnScreenOff}" />
@@ -108,14 +108,14 @@
         <StackPanel Spacing="8">
           <TextBlock Text="投屏标题调节" Classes="h2" Margin="0" />
           <WrapPanel>
-            <CheckBox Content="设备名称" IsChecked="True" Margin="0,0,14,6" />
-            <CheckBox Content="启动槽位" IsChecked="True" Margin="0,0,14,6" />
-            <CheckBox Content="安卓版本" IsChecked="True" Margin="0,0,14,6" />
-            <CheckBox Content="设备序列号" IsChecked="True" Margin="0,0,14,6" />
-            <CheckBox Content="设备代号" Margin="0,0,14,6" />
-            <CheckBox Content="版本信息" Margin="0,0,14,6" />
-            <CheckBox Content="解锁状态" Margin="0,0,14,6" />
-            <CheckBox Content="电量" Margin="0,0,14,6" />
+            <CheckBox Content="设备名称" IsChecked="True" Margin="0,0,12,8" />
+            <CheckBox Content="启动槽位" IsChecked="True" Margin="0,0,12,8" />
+            <CheckBox Content="安卓版本" IsChecked="True" Margin="0,0,12,8" />
+            <CheckBox Content="设备序列号" IsChecked="True" Margin="0,0,12,8" />
+            <CheckBox Content="设备代号" Margin="0,0,12,8" />
+            <CheckBox Content="版本信息" Margin="0,0,12,8" />
+            <CheckBox Content="解锁状态" Margin="0,0,12,8" />
+            <CheckBox Content="电量" Margin="0,0,12,8" />
           </WrapPanel>
         </StackPanel>
       </Border>
@@ -125,7 +125,7 @@
           <TextBlock Text="投屏日志" Classes="h2" Margin="0" />
           <TextBox Text="{Binding Log}" IsReadOnly="True" AcceptsReturn="True"
                    PlaceholderText="投屏实时输出..." Background="#FAFAFD" BorderThickness="0"
-                   MinHeight="140" FontSize="12" Foreground="#44405A"
+                   MinHeight="140" FontSize="12" Foreground="#1B1B26"
                    FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, monospace" />
           <TextBlock Text="{Binding Availability}" Classes="muted" />
         </StackPanel>

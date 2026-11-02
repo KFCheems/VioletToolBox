@@ -17,28 +17,28 @@
             <Button Grid.Column="1" Content="读分区表[机1]" Command="{Binding RefreshCommand}" />
             <Button Grid.Column="2" Content="读分区表[FB]" Command="{Binding RefreshFastbootCommand}" />
             <Border Grid.Column="3" Background="#EDF0FD" CornerRadius="4" Padding="8,4" VerticalAlignment="Center">
-              <TextBlock Text="{Binding SelectionSummary}" FontSize="11.5" Foreground="#4C82F0" />
+              <TextBlock Text="{Binding SelectionSummary}" FontSize="12" Foreground="#3B6FD4" />
             </Border>
           </Grid>
           <WrapPanel>
-            <CheckBox Content="生成XML" IsChecked="{Binding GenerateXml}" Margin="0,0,14,6" />
-            <CheckBox Content="保护分区" IsChecked="True" Margin="0,0,14,6" />
+            <CheckBox Content="生成XML" IsChecked="{Binding GenerateXml}" Margin="0,0,12,8" />
+            <CheckBox Content="保护分区" IsChecked="True" Margin="0,0,12,8" />
           </WrapPanel>
 
           <Border Classes="tableHeader">
             <Grid ColumnDefinitions="*,110,220">
-              <TextBlock Grid.Column="0" Text="名称" FontSize="11.5" FontWeight="Bold" Foreground="#5C5670" />
-              <TextBlock Grid.Column="1" Text="大小" FontSize="11.5" FontWeight="Bold" Foreground="#5C5670" />
-              <TextBlock Grid.Column="2" Text="文件路径" FontSize="11.5" FontWeight="Bold" Foreground="#5C5670" />
+              <TextBlock Grid.Column="0" Text="名称" FontSize="12" FontWeight="Medium" Foreground="#4E4A5C" />
+              <TextBlock Grid.Column="1" Text="大小" FontSize="12" FontWeight="Medium" Foreground="#4E4A5C" />
+              <TextBlock Grid.Column="2" Text="文件路径" FontSize="12" FontWeight="Medium" Foreground="#4E4A5C" />
             </Grid>
           </Border>
           <ListBox ItemsSource="{Binding Partitions}" SelectedItem="{Binding Selected}" MinHeight="300" MaxHeight="420">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:PartitionRowViewModel">
                 <Grid ColumnDefinitions="*,110,220">
-                  <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="12.5" VerticalAlignment="Center" />
-                  <TextBlock Grid.Column="1" Text="{Binding Size}" FontSize="12" Foreground="#5C5670" VerticalAlignment="Center" />
-                  <TextBlock Grid.Column="2" Text="{Binding Source}" FontSize="11" Foreground="#8D88A0"
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="13" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding Size}" FontSize="12" Foreground="#4E4A5C" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="{Binding Source}" FontSize="12" Foreground="#73737B"
                              VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                 </Grid>
               </DataTemplate>
@@ -53,7 +53,7 @@
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
             <TextBox Grid.Column="0" Text="{Binding FlashScript}"
                      PlaceholderText="flash_all*.bat 或 rawprogram*.xml" />
-            <Button Grid.Column="1" Content="📁 选择" Command="{Binding PickScriptCommand}" />
+            <Button Grid.Column="1" Content="选择" Command="{Binding PickScriptCommand}" />
           </Grid>
         </StackPanel>
       </Border>
@@ -62,12 +62,12 @@
         <StackPanel Spacing="10">
           <TextBlock Text="操作" Classes="h2" Margin="0" />
           <WrapPanel>
-            <CheckBox Content="自动重启" Margin="0,0,14,6" />
-            <CheckBox Content="切换A槽" Margin="0,0,14,6" />
-            <CheckBox Content="清除数据" Margin="0,0,14,6" />
-            <CheckBox Content="锁定BL" Margin="0,0,14,6" />
-            <CheckBox Content="跳过CRC" IsChecked="True" Margin="0,0,14,6" />
-            <CheckBox Content="禁用DM校验" Margin="0,0,14,6" />
+            <CheckBox Content="自动重启" Margin="0,0,12,8" />
+            <CheckBox Content="切换A槽" Margin="0,0,12,8" />
+            <CheckBox Content="清除数据" Margin="0,0,12,8" />
+            <CheckBox Content="锁定BL" Margin="0,0,12,8" />
+            <CheckBox Content="跳过CRC" IsChecked="True" Margin="0,0,12,8" />
+            <CheckBox Content="禁用DM校验" Margin="0,0,12,8" />
           </WrapPanel>
           <Grid ColumnDefinitions="1*,1*,1*,1*" ColumnSpacing="8">
             <Button Grid.Column="0" Content="写入分区" Margin="0,0,0,8" Command="{Binding WriteCommand}" />
@@ -78,10 +78,10 @@
             <Button Grid.Column="1" Grid.Row="1" Classes="dangerSolid" Content="停止操作" Margin="0,0,0,8" Command="{Binding CancelCommand}" />
           </Grid>
           <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Grid.Column="0" Text="{Binding ProgressText}" FontSize="12" Foreground="#5C5670"
+            <TextBlock Grid.Column="0" Text="{Binding ProgressText}" FontSize="12" Foreground="#4E4A5C"
                        TextTrimming="CharacterEllipsis" />
             <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}"
-                       Foreground="#4C82F0" FontWeight="Bold" />
+                       Foreground="#3B6FD4" FontWeight="Medium" />
           </Grid>
           <ProgressBar Value="{Binding Percent}" />
           <TextBlock Text="0MB/s | Time:0s" Classes="muted" />
@@ -96,11 +96,11 @@
         <TextBlock Text="执行日志" Classes="h2" Margin="0" />
         <TextBox Text="{Binding Log}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
                  Background="#FAFAFD" BorderThickness="0" MinHeight="500" FontSize="12"
-                 Foreground="#44405A"
+                 Foreground="#1B1B26"
                  FontFamily="JetBrains Mono, Noto Sans Mono CJK SC, monospace" />
         <Grid ColumnDefinitions="*,Auto">
           <TextBlock Grid.Column="0" Text="{Binding Mode}" Classes="muted" />
-          <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}" Foreground="#4C82F0" FontWeight="Bold" />
+          <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat={}{0:F0}%}" Foreground="#3B6FD4" FontWeight="Medium" />
         </Grid>
       </StackPanel>
     </Border>

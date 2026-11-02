@@ -16,12 +16,12 @@
         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
           <ComboBox Grid.Column="0" ItemsSource="{Binding Sources}" SelectedItem="{Binding Source}" MinWidth="110" />
           <TextBox Grid.Column="1" Text="{Binding Keyword}" PlaceholderText="机型 / MTM / 关键词 / 页面URL（url 源）" />
-          <Button Grid.Column="2" Classes="primary" Content="🔍 查询固件" Command="{Binding QueryCommand}" Padding="18,10" />
+          <Button Grid.Column="2" Classes="primary" Content="查询固件" Command="{Binding QueryCommand}" Padding="16,8" />
         </Grid>
-        <Border Background="#F0EFF6" CornerRadius="8,8,0,0" Padding="14,8">
+        <Border Background="#F0EFF6" CornerRadius="8,8,0,0" Padding="12,8">
           <Grid ColumnDefinitions="*,110">
-            <TextBlock Grid.Column="0" Text="固件包名称" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
-            <TextBlock Grid.Column="1" Text="体积" FontSize="11.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="0" Text="固件包名称" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource TextMutedBrush}" />
+            <TextBlock Grid.Column="1" Text="体积" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource TextMutedBrush}" />
           </Grid>
         </Border>
         <Border Classes="panel" Padding="4" CornerRadius="0,0,8,8" Margin="0,-10,0,0">
@@ -30,7 +30,7 @@
             <DataTemplate x:DataType="vm:RomRow">
               <Grid ColumnDefinitions="*,110">
                 <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="Medium" />
-                <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="{DynamicResource MutedBrush}" FontSize="11" />
+                <TextBlock Grid.Column="1" Text="{Binding Size}" Foreground="{DynamicResource MutedBrush}" FontSize="12" />
               </Grid>
             </DataTemplate>
           </ListBox.ItemTemplate>
@@ -39,7 +39,7 @@
         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
         <StackPanel Orientation="Horizontal" Spacing="8">
           <Button Classes="primary" Content="aria2 下载所选" Command="{Binding DownloadCommand}" />
-          <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#5C5670" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding Status}" FontSize="13" Foreground="#4E4A5C" TextWrapping="Wrap" />
         </StackPanel>
       </StackPanel>
     </Border>

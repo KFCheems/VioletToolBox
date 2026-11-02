@@ -15,11 +15,11 @@
       <StackPanel Spacing="10">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
           <TextBox Grid.Column="0" Text="{Binding AssistantApk}" PlaceholderText="ColorOS 助手 APK（可选）" IsReadOnly="True" />
-          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickApkCommand}" />
+          <Button Grid.Column="1" Content="浏览" Command="{Binding PickApkCommand}" />
         </Grid>
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
           <TextBox Grid.Column="0" Text="{Binding DownloadDir}" PlaceholderText="下载目录（留空=~/Downloads）" />
-          <Button Grid.Column="1" Content="浏览…" Command="{Binding PickDirCommand}" />
+          <Button Grid.Column="1" Content="浏览" Command="{Binding PickDirCommand}" />
         </Grid>
         <StackPanel Orientation="Horizontal" Spacing="12">
           <CheckBox Content="仅查询降级包（不执行）" IsChecked="{Binding QueryOnly}" />
@@ -33,7 +33,7 @@
           </ListBox.ItemTemplate>
         </ListBox>
         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Percent}" Height="6" />
-        <TextBlock Text="{Binding Status}" FontSize="12.5" Foreground="#5C5670" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Status}" FontSize="13" Foreground="#4E4A5C" TextWrapping="Wrap" />
       </StackPanel>
     </Border>
   </StackPanel>
