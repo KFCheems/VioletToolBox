@@ -10,7 +10,7 @@ public partial class MainWindow : Window
     // Map (list, index) → page VM, mirroring the upstream 18-item navigation.
     private readonly List<(ListBox List, int Index, Func<MainWindowViewModel, ViewModelBase> Page)> _navMap = [];
     private bool _wiring;
-    private bool _userInteracted;
+    private bool _opened;
 
     public MainWindow()
     {
@@ -26,6 +26,7 @@ public partial class MainWindow : Window
     {
         if (Vm is null) return;
         Vm.SetPickers(PickOpenFileAsync, PickSaveFileAsync, PickFolderAsync);
+
 
         _navMap.Clear();
         _navMap.Add((TopNav, 0, vm => vm.DevicePage));      // 主页
@@ -56,38 +57,34 @@ public partial class MainWindow : Window
         _wiring = false;
     }
 
-    // SelectionChanged fires from delayed container generation too (auto-select of
-    // index 0 after startup), which used to override the --page startup choice.
-    // Only pointer-confirmed selections may change the page now.
     private void OnNavSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (_wiring || !_userInteracted || Vm is null || sender is not ListBox list || list.SelectedIndex < 0) return;
+        // The container-generation auto-selection happens before OnOpened (the
+        // user cannot click an invisible window), so gate on that instead of
+        // fighting the framework afterwards.
+        if (_wiring || !_opened || Vm is null || sender is not ListBox list || list.SelectedIndex < 0) return;
 
-        var entry = _navMap.FirstOrDefault(m => m.List == list);
+        var entry = _navMap.FirstOrDefault(m => m.List == list && m.Index == list.SelectedIndex);
         if (entry.List is null) return;
 
-        var page = entry.Page(Vm);
         _wiring = true;
         ClearOtherSelections(list);
-        Vm.CurrentPage = page;
+        Vm.CurrentPage = entry.Page(Vm);
         _wiring = false;
     }
 
-    protected override void OnPointerPressed(PointerPressedEventArgs e)
-    {
-        _userInteracted = true;
-        base.OnPointerPressed(e);
-    }
-
+    /// <summary>Points every nav list's highlight at the current page (no page mutation).</summary>
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        // Templates are applied by now: re-assert the startup page once more.
+        // Layout/templates have settled by the first opened pass; sync highlight
+        // to the startup page, then start honouring selections (real clicks).
         if (Vm is { } vm)
         {
             _wiring = true;
             SelectForPage(vm.CurrentPage);
             _wiring = false;
+            _opened = true;
         }
     }
 
